@@ -1,0 +1,33 @@
+.react-bootstrap-table-page-btns-ul {
+  float: right;
+  margin-top: 0px; 
+}
+  
+.react-bootstrap-table-pagination-list-hidden {
+  display: none; 
+}
+
+.Polaris-Frame__Content {
+  background-color: #ffffff
+}
+
+#AppFrameNav {
+  box-shadow: inset -1px 0 0 0 #dfe3e8;
+  background-color: #f4f6f8;
+}
+
+.Polaris-Navigation__ListItem {
+  margin-bottom: 10px;
+}
+
+#search-bar-0 {
+    height: 20px;
+    font-family: SFProText;
+    font-size: 14px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.43;
+    letter-spacing: normal;
+    color: #919eab;
+}
