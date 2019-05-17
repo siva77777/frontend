@@ -6,21 +6,21 @@ module.exports = {
         entry: __dirname + '/src/main.js'
     },
     output: {
-        filename: 'index.js'
+        filename: 'dist/index.js'
     },
     module: {
         rules: [
-        {
-            test: /\.(js|jsx)$/,
-            loader: 'babel-loader',
-            exclude: /node_modules/
-        },
-        {
-            test: /\.css$/,
-            use: ['style-loader', 'css-loader']
-        }
-    ]
-},
+            {
+                test: /\.(js|jsx)$/,
+                loader: 'babel-loader',
+                exclude: /node_modules/
+            },
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader']
+            }
+        ]
+    },
     optimization: {
         minimizer: [new UglifyJsPlugin()]
     }

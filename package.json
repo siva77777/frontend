@@ -16,7 +16,7 @@
     "style-loader": "^0.23.1"
   },
   "scripts": {
-    "start": "webpack-dev-server --open --mode development",
+    "start": "webpack-dev-server --mode development",
     "build": "webpack --mode production"
   },
   "eslintConfig": {
