@@ -30,7 +30,7 @@ class Subjects extends React.Component {
   fetchData() {
     Axios({
       method: "get",
-      url: "http://www.srmheavens.com/subject/",
+      url: "http://www.srmheavens.com/erp/subject/",
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': this.props.token
@@ -153,7 +153,7 @@ class Subjects extends React.Component {
     this.resetFields();
     Axios({
       method: "post",
-      url: "http://www.srmheavens.com/subject/",
+      url: "http://www.srmheavens.com/erp/subject/",
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': this.props.token

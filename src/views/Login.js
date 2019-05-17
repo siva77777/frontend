@@ -51,7 +51,7 @@ class Login extends React.Component {
         this.setState({ passwordFieldValue });
     };
     handleLogin = () => {
-        var apiBaseUrl = "http://www.srmheavens.com/user/generateToken";
+        var apiBaseUrl = "http://www.srmheavens.com/erp/user/generateToken";
         var payload = {
             "uID": this.state.userNameFieldValue,
             "password": this.state.passwordFieldValue

@@ -33,7 +33,7 @@ class Buses extends React.Component {
   fetchData() {
     Axios({
       method: "get",
-      url: "http://www.srmheavens.com/bus/",
+      url: "http://www.srmheavens.com/erp/bus/",
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': this.props.token
@@ -208,7 +208,7 @@ class Buses extends React.Component {
 
     Axios({
       method: "post",
-      url: "http://www.srmheavens.com/bus/",
+      url: "http://www.srmheavens.com/erp/bus/",
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': this.props.token

@@ -29,7 +29,7 @@ class Hostels extends React.Component {
   fetchData() {
     Axios({
       method: "get",
-      url: "http://www.srmheavens.com/hostel/",
+      url: "http://www.srmheavens.com/erp/hostel/",
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': this.props.token
@@ -204,7 +204,7 @@ class Hostels extends React.Component {
     this.resetFields();
     Axios({
       method: "post",
-      url: "http://www.srmheavens.com/hostel/",
+      url: "http://www.srmheavens.com/erp/hostel/",
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': this.props.token

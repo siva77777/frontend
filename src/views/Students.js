@@ -62,7 +62,7 @@ class Students extends React.Component {
   fetchData() {
     Axios({
       method: "get",
-      url: "http://www.srmheavens.com/admission/students/",
+      url: "http://www.srmheavens.com/erp/admission/students/",
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': this.props.token
@@ -77,7 +77,7 @@ class Students extends React.Component {
     });
     Axios({
       method: "get",
-      url: "http://www.srmheavens.com/class/",
+      url: "http://www.srmheavens.com/erp/class/",
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': this.props.token
@@ -91,7 +91,7 @@ class Students extends React.Component {
     });
     Axios({
       method: "get",
-      url: "http://www.srmheavens.com/bus/",
+      url: "http://www.srmheavens.com/erp/bus/",
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': this.props.token
@@ -105,7 +105,7 @@ class Students extends React.Component {
     });
     Axios({
       method: "get",
-      url: "http://www.srmheavens.com/hostel/",
+      url: "http://www.srmheavens.com/erp/hostel/",
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': this.props.token
@@ -685,7 +685,7 @@ class Students extends React.Component {
     this.resetFields();
     Axios({
       method: "post",
-      url: "http://www.srmheavens.com/admission/",
+      url: "http://www.srmheavens.com/erp/admission/",
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': this.props.token
