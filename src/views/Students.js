@@ -20,7 +20,6 @@ class Students extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoaded: false,
       rows: [],
       classOptions: [],
       busNameOptions: [],
@@ -51,11 +50,9 @@ class Students extends React.Component {
       totalFeeFieldValue: _BUS_FEE + _HOSTEL_FEE + _ADMISSION_FEE + _LAB_FEE + _MISCELLANOUS_FEE - _CONCESSION_FEE,
       value: "DAY SCHOLAR",
       selectedGender: "MALE",
-      selectedCategory: "GENERAL"
+      selectedCategory: "GENERAL",
+      selectedMonth: "01"
     };
-  }
-
-  componentDidMount() {
     this.fetchData();
   }
 
@@ -73,7 +70,7 @@ class Students extends React.Component {
       for (var i = 0; i < tableData.length; i++) {
         rows.push({ studentID: tableData[i].Si_studentID, name: tableData[i].Si_firstName + " " + tableData[i].Si_lastName, class: tableData[i].Ci_classStandard, parent: tableData[i].Pi_fatherFirstName + " " + tableData[i].Pi_fatherLastName, phone: tableData[i].Pi_parentPhone, residentDetails: tableData[i].Si_residentDetails });
       }
-      this.setState({ rows: rows, isLoaded: true });
+      this.setState({ rows: rows });
     });
     Axios({
       method: "get",
@@ -87,7 +84,7 @@ class Students extends React.Component {
       for (var i = 0; i < data.length; i++) {
         options.push({ label: data[i].Ci_classStandard, value: data[i].Ci_classStandard });
       }
-      this.setState({ classOptions: options });
+      this.setState({ classOptions: options, selectedClass: options[0].value });
     });
     Axios({
       method: "get",
@@ -101,7 +98,7 @@ class Students extends React.Component {
       for (var i = 0; i < data.length; i++) {
         options.push({ label: data[i].Bi_busName, value: data[i].Bi_busName });
       }
-      this.setState({ busNameOptions: options });
+      this.setState({ busNameOptions: options, selectedBus: options[0].value });
     });
     Axios({
       method: "get",
@@ -115,7 +112,7 @@ class Students extends React.Component {
       for (var i = 0; i < data.length; i++) {
         options.push({ label: data[i].Hi_hallName, value: data[i].Hi_hallName });
       }
-      this.setState({ hallOptions: options });
+      this.setState({ hallOptions: options, selectedHall: options[0].value });
     });
   }
 
@@ -469,11 +466,7 @@ class Students extends React.Component {
         </ToolkitProvider>
       </Page>
     );
-    if (this.state.isLoaded) {
-      return abc;
-    } else {
-      return null;
-    }
+    return abc;
   }
 
   handleFirstNameFieldChange = (firstNameFieldValue) => {
@@ -659,7 +652,7 @@ class Students extends React.Component {
     this.setState({ showStudentsModal: true });
   }
 
-  showSubmitMessage = () => {
+  showSubmitMessage = () => {    
     var data = {
       ffName: this.state.fatherFirstNameFieldValue,
       flName: this.state.fatherLastNameFieldValue,
@@ -671,8 +664,6 @@ class Students extends React.Component {
       gName: this.state.guardianNameFieldValue,
       gPhone: this.state.guardianPhoneNumberFieldValue,
       std: this.state.selectedClass,
-      hallName: this.state.selectedHall,
-      busName: this.state.selectedBus,
       fName: this.state.firstNameFieldValue,
       lName: this.state.lastNameFieldValue,
       gender: this.state.selectedGender,
@@ -680,8 +671,20 @@ class Students extends React.Component {
       dob: this.state.yearFieldValue + "-" + this.state.selectedMonth + "-" + this.state.dateFieldValue,
       email: this.state.emailAddressFieldValue,
       address: this.state.addressFieldValue,
-      rDetails: this.state.value
+      rDetails: this.state.value,
+      busFee: this.state.busFeeFieldValue,
+      hostelFee: this.state.hostelFeeFieldValue,
+      admissionFee: this.state.admissionFeeFieldValue,
+      labFee: this.state.labFeeFieldValue,
+      miscellanousFee: this.state.miscellanousFeeFieldValue,
+      concessionFee: this.state.concessionFeeFieldValue,
+      totalFee: this.state.totalFeeFieldValue
     };
+    if (this.state.value == "HOSTELLER") {
+      data.hallName =  this.state.selectedHall
+    } else {
+      data.busName = this.state.selectedBus
+    }
     this.resetFields();
     Axios({
       method: "post",
