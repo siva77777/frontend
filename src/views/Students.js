@@ -22,6 +22,7 @@ class Students extends React.Component {
     this.state = {
       rows: [],
       classOptions: [],
+      branchOptions: [],
       busNameOptions: [],
       hallOptions: [],
       showStudentsModal: false,
@@ -49,10 +50,25 @@ class Students extends React.Component {
       concessionFeeFieldValue: _CONCESSION_FEE,
       totalFeeFieldValue: _BUS_FEE + _HOSTEL_FEE + _ADMISSION_FEE + _LAB_FEE + _MISCELLANOUS_FEE - _CONCESSION_FEE,
       value: "DAY SCHOLAR",
-      selectedGender: "MALE",
-      selectedCategory: "GENERAL",
-      selectedMonth: "01"
+      selectedClass: "",
+      selectedGender: "",
+      selectedCategory: "",
+      selectedMonth: "",
+      selectedBranch: "",
+      selectedBus: "",
+      selectedHall: "",
+      classSelectValidationError: "",
+      busSelectValidationError: "",
+      genderSelectValidationError: "",
+      monthSelectValidationError: "",
+      hallSelectValidationError: "",
+      categorySelectValidationError: "",
+      branchSelectValidationError: "",
+      isLoaded: false
     };
+  }
+
+  componentDidMount() {
     this.fetchData();
   }
 
@@ -70,7 +86,7 @@ class Students extends React.Component {
       for (var i = 0; i < tableData.length; i++) {
         rows.push({ studentID: tableData[i].Si_studentID, name: tableData[i].Si_firstName + " " + tableData[i].Si_lastName, class: tableData[i].Ci_classStandard, parent: tableData[i].Pi_fatherFirstName + " " + tableData[i].Pi_fatherLastName, phone: tableData[i].Pi_parentPhone, residentDetails: tableData[i].Si_residentDetails });
       }
-      this.setState({ rows: rows });
+      this.setState({ rows: rows, isLoaded: true });
     });
     Axios({
       method: "get",
@@ -84,7 +100,7 @@ class Students extends React.Component {
       for (var i = 0; i < data.length; i++) {
         options.push({ label: data[i].Ci_classStandard, value: data[i].Ci_classStandard });
       }
-      this.setState({ classOptions: options, selectedClass: options[0].value });
+      this.setState({ classOptions: options });
     });
     Axios({
       method: "get",
@@ -98,7 +114,7 @@ class Students extends React.Component {
       for (var i = 0; i < data.length; i++) {
         options.push({ label: data[i].Bi_busName, value: data[i].Bi_busName });
       }
-      this.setState({ busNameOptions: options, selectedBus: options[0].value });
+      this.setState({ busNameOptions: options });
     });
     Axios({
       method: "get",
@@ -112,7 +128,21 @@ class Students extends React.Component {
       for (var i = 0; i < data.length; i++) {
         options.push({ label: data[i].Hi_hallName, value: data[i].Hi_hallName });
       }
-      this.setState({ hallOptions: options, selectedHall: options[0].value });
+      this.setState({ hallOptions: options });
+    });
+    Axios({
+      method: "get",
+      url: "http://www.srmheavens.com/erp/branch/",
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': this.props.token
+      }
+    }).then(response => response.data).then(data => {
+      var options = [];
+      for (var i = 0; i < data.length; i++) {
+        options.push({ label: data[i].SBi_branchName, value: data[i].SBi_branchName });
+      }
+      this.setState({ branchOptions: options });
     });
   }
 
@@ -174,12 +204,24 @@ class Students extends React.Component {
                   type="text"
                 />
               </FormLayout.Group>
-              <Select
-                label="Class"
-                options={this.state.classOptions}
-                onChange={this.handleClassChange}
-                value={this.state.selectedClass}
-              />
+              <FormLayout.Group>
+                <Select
+                  label="Class"
+                  options={this.state.classOptions}
+                  onChange={this.handleClassChange}
+                  value={this.state.selectedClass}
+                  placeholder="Select Class"
+                  error={this.state.classSelectValidationError}
+                />
+                <Select
+                  label="Branch"
+                  options={this.state.branchOptions}
+                  onChange={this.handleBranchChange}
+                  value={this.state.selectedBranch}
+                  placeholder="Select Branch"
+                  error={this.state.branchSelectValidationError}
+                />
+              </FormLayout.Group>
               <TextField
                 label="Email address"
                 value={this.state.emailAddressFieldValue}
@@ -199,6 +241,8 @@ class Students extends React.Component {
                   options={monthOptions}
                   onChange={this.handleMonthChange}
                   value={this.state.selectedMonth}
+                  placeholder="Select Month"
+                  error={this.state.monthSelectValidationError}
                 />
                 <TextField
                   label="Date"
@@ -219,12 +263,16 @@ class Students extends React.Component {
                   options={genderOptions}
                   onChange={this.handleGenderChange}
                   value={this.state.selectedGender}
+                  placeholder="Select Gender"
+                  error={this.state.genderSelectValidationError}
                 />
                 <Select
                   label="Category"
                   options={categoryOptions}
                   onChange={this.handleCategoryChange}
                   value={this.state.selectedCategory}
+                  placeholder="Select Category"
+                  error={this.state.categorySelectValidationError}
                 />
               </FormLayout.Group>
               <TextField
@@ -256,11 +304,15 @@ class Students extends React.Component {
                 options={this.state.busNameOptions}
                 onChange={this.handleBusChange}
                 value={this.state.selectedBus}
+                placeholder="Select Bus"
+                error={this.state.busSelectValidationError}
               /> : <Select
                   label="Hall Name"
                   options={this.state.hallOptions}
                   onChange={this.handleHallChange}
                   value={this.state.selectedHall}
+                  placeholder="Select Hall"
+                  error={this.state.hallSelectValidationError}
                 />}
             </FormLayout>
           </Modal.Section>
@@ -466,7 +518,11 @@ class Students extends React.Component {
         </ToolkitProvider>
       </Page>
     );
-    return abc;
+    if (this.state.isLoaded) {
+      return abc;
+    } else {
+      return null;
+    }
   }
 
   handleFirstNameFieldChange = (firstNameFieldValue) => {
@@ -577,7 +633,10 @@ class Students extends React.Component {
   }
 
   handleShowStudentsModalSecondPage = () => {
-    this.setState({ showFirstPage: false, showSecondPage: true, showThirdPage: false });
+    var isValid = this.validateFirstPage();
+    if (isValid) {
+      this.setState({ showFirstPage: false, showSecondPage: true, showThirdPage: false });
+    }
   }
 
   handleShowStudentsModalThirdPage = () => {
@@ -585,19 +644,23 @@ class Students extends React.Component {
   }
 
   handleClassChange = (newValue) => {
-    this.setState({ selectedClass: newValue });
+    this.setState({ selectedClass: newValue, classSelectValidationError: "" });
+  };
+
+  handleBranchChange = (newValue) => {
+    this.setState({ selectedBranch: newValue, branchSelectValidationError: "" });
   };
 
   handleMonthChange = (newValue) => {
-    this.setState({ selectedMonth: newValue });
+    this.setState({ selectedMonth: newValue, monthSelectValidationError: "" });
   };
 
   handleGenderChange = (newValue) => {
-    this.setState({ selectedGender: newValue });
+    this.setState({ selectedGender: newValue, genderSelectValidationError: "" });
   }
 
   handleCategoryChange = (newValue) => {
-    this.setState({ selectedCategory: newValue });
+    this.setState({ selectedCategory: newValue, categorySelectValidationError: "" });
   }
 
   handleStudentStayChange = (checked, newValue) => {
@@ -609,11 +672,43 @@ class Students extends React.Component {
   };
 
   handleBusChange = (newValue) => {
-    this.setState({ selectedBus: newValue });
+    this.setState({ selectedBus: newValue, busSelectValidationError: "" });
   }
 
   handleHallChange = (newValue) => {
-    this.setState({ selectedHall: newValue });
+    this.setState({ selectedHall: newValue, hallSelectValidationError: "" });
+  }
+
+  validateFirstPage = () => {
+    if (!this.state.selectedClass) {
+      this.setState({classSelectValidationError: "Class is required"})
+    }
+    if (!this.state.selectedBranch) {
+      this.setState({branchSelectValidationError: "Branch is required"})
+    }
+    if (!this.state.selectedMonth) {
+      this.setState({monthSelectValidationError: "Month is required"})
+    }
+    if (!this.state.selectedGender) {
+      this.setState({genderSelectValidationError: "Gender is required"})
+    }
+    if (!this.state.selectedCategory) {
+      this.setState({categorySelectValidationError: "Category is required"})
+    }
+    if (this.state.value === "DAY SCHOLAR") {
+      if (!this.state.selectedBus) {
+        this.setState({busSelectValidationError: "Bus is required"})
+      }
+    } else {
+      if (!this.state.selectedHall) {
+        this.setState({hallSelectValidationError: "Hall is required"})
+      }
+    }
+    if (!this.state.selectedClass || !this.state.selectedBranch || !this.state.selectedMonth || !this.state.selectedGender || !this.state.selectedCategory || (!this.state.selectedBus && !this.state.selectedHall)) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   resetFields = () => {
@@ -638,6 +733,13 @@ class Students extends React.Component {
       showFirstPage: true,
       showSecondPage: false,
       value: "DAY SCHOLAR",
+      selectedClass: "",
+      selectedGender: "",
+      selectedCategory: "",
+      selectedMonth: "",
+      selectedBranch: "",
+      selectedBus: "",
+      selectedHall: "",
       busFeeFieldValue: _BUS_FEE,
       hostelFeeFieldValue: _HOSTEL_FEE,
       admissionFeeFieldValue: _ADMISSION_FEE,
@@ -652,7 +754,7 @@ class Students extends React.Component {
     this.setState({ showStudentsModal: true });
   }
 
-  showSubmitMessage = () => {    
+  showSubmitMessage = () => {
     var data = {
       ffName: this.state.fatherFirstNameFieldValue,
       flName: this.state.fatherLastNameFieldValue,
@@ -681,7 +783,7 @@ class Students extends React.Component {
       totalFee: this.state.totalFeeFieldValue
     };
     if (this.state.value == "HOSTELLER") {
-      data.hallName =  this.state.selectedHall
+      data.hallName = this.state.selectedHall
     } else {
       data.busName = this.state.selectedBus
     }

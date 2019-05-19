@@ -23,7 +23,8 @@ class Login extends React.Component {
             )
         } else {
             return (
-                <div style={{ position: "absolute", width: "330px", height: "694px", margin: "auto", top: "0%", bottom: "0%", left: "0%", right: "0%" }}>
+                <div style={{ width: "330px", height: "694px", margin: "auto", top: "0%", bottom: "0%", left: "0%", right: "0%" }}>
+                <img src="src/images/srmHeavensLogo.png" width="124" height="94" style={{display: "block", margin: "59px 103px", backgroundColor: "black"}}/>
                     <FormLayout>
                         <TextField
                             label="User Name"
@@ -35,7 +36,7 @@ class Login extends React.Component {
                             label="Password"
                             value={this.state.passwordFieldValue}
                             onChange={this.handlePasswordFieldChange}
-                            type="text"
+                            type="password"
                         />
                         <Button fullWidth primary onClick={this.handleLogin}>Login</Button>
                     </FormLayout>
