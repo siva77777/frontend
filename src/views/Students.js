@@ -773,6 +773,7 @@ class Students extends React.Component {
       dob: this.state.yearFieldValue + "-" + this.state.selectedMonth + "-" + this.state.dateFieldValue,
       email: this.state.emailAddressFieldValue,
       address: this.state.addressFieldValue,
+      bName: this.state.selectedBranch,
       rDetails: this.state.value,
       busFee: this.state.busFeeFieldValue,
       hostelFee: this.state.hostelFeeFieldValue,
