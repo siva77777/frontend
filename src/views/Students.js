@@ -844,7 +844,7 @@ class Students extends React.Component {
       labFee: this.state.labFeeFieldValue,
       miscellanousFee: this.state.miscellanousFeeFieldValue,
       concessionFee: this.state.concessionFeeFieldValue,
-      totalFee: this.state.totalFeeFieldValue
+      totalFee: this.state.totalFeeFieldValue.toString()
     };
     if (this.state.value == "HOSTELLER") {
       data.hallName = this.state.selectedHall
