@@ -760,6 +760,7 @@ class Students extends React.Component {
   resetFields = () => {
     this.setState({
       showStudentsModal: false,
+      date: new Date(),
       firstNameFieldValue: "",
       lastNameFieldValue: "",
       emailAddressFieldValue: "",
@@ -843,7 +844,7 @@ class Students extends React.Component {
       labFee: this.state.labFeeFieldValue,
       miscellanousFee: this.state.miscellanousFeeFieldValue,
       concessionFee: this.state.concessionFeeFieldValue,
-      totalFee: parseInt(this.state.totalFeeFieldValue)
+      totalFee: this.state.totalFeeFieldValue
     };
     if (this.state.value == "HOSTELLER") {
       data.hallName = this.state.selectedHall
