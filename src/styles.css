@@ -31,3 +31,7 @@
     letter-spacing: normal;
     color: #919eab;
 }
+.calendar .Polaris-TextField {
+  width: 100px;
+  margin-left: -70%
+}

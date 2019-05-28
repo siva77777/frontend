@@ -1,9 +1,10 @@
 import React from 'react';
-import { Button, FormLayout, Modal, Page, TextField } from '@shopify/polaris';
+import { Button, FormLayout, Modal, Page, Select, TextField } from '@shopify/polaris';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Axios from 'axios';
+import validator from 'validator';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -15,10 +16,17 @@ class Teachers extends React.Component {
     super(props);
     this.state = {
       rows: [],
+      branchOptions: [],
       showTeachersModal: false,
       isLoaded: false,
-      subjectNameFieldValue: "",
-      subjectCodeFieldValue: ""
+      selectedBranch: "",
+      teacherNameFieldValue: "",
+      teacherPhoneNumberFieldValue: "",
+      teacherSpecializationFieldValue: "",
+      teacherNameFieldValidationError: "",
+      teacherPhoneNumberFieldValidationError: "",
+      teacherSpecializationFieldValidationError: "",
+      branchSelectValidationError: ""
     };
   }
 
@@ -29,19 +37,32 @@ class Teachers extends React.Component {
   fetchData() {
     Axios({
       method: "get",
-      url: "http://www.srmheavens.com/erp/subject/",
+      url: "http://www.srmheavens.com/erp/teacher/",
       headers: {
         'Content-Type': 'application/json',
         'x-access-token': this.props.token
       }
     }).then(response => response.data).then(data => {
-      console.log(data, "sadsadsa");
       var tableData = data;
       var rows = [];
       for (var i = 0; i < tableData.length; i++) {
-        rows.push({ subjectName: tableData[i].SCi_subjectName, subjectCode: tableData[i].SCi_subjectCode });
+        rows.push({ teacherName: tableData[i].Ti_teacherName, teacherPhoneNumber: tableData[i].Ti_teacherPhoneNumber, teacherSpecialization: tableData[i].Ti_teacherSpecialization });
       }
       this.setState({ rows: rows, isLoaded: true });
+    });
+    Axios({
+      method: "get",
+      url: "http://www.srmheavens.com/erp/branch/",
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': this.props.token
+      }
+    }).then(response => response.data).then(data => {
+      var options = [];
+      for (var i = 0; i < data.length; i++) {
+        options.push({ label: data[i].SBi_branchName, value: data[i].SBi_branchName });
+      }
+      this.setState({ branchOptions: options });
     });
   }
 
@@ -59,18 +80,39 @@ class Teachers extends React.Component {
       >
         <Modal.Section>
           <FormLayout>
-            <TextField
-              label="Subject Name"
-              value={this.state.subjectNameFieldValue}
-              onChange={this.handleSubjectNameFieldChange}
-              type="text"
-            />
-            <TextField
-              label="Subject Code"
-              value={this.state.subjectCodeFieldValue}
-              onChange={this.handleSubjectCodeFieldChange}
-              type="text"
-            />
+            <FormLayout.Group>
+              <TextField
+                label="Teacher Name"
+                value={this.state.teacherNameFieldValue}
+                onChange={this.handleTeacherNameFieldChange}
+                type="text"
+                error={this.state.teacherNameFieldValidationError}
+              />
+              <TextField
+                label="Teacher phone number"
+                value={this.state.teacherPhoneNumberFieldValue}
+                onChange={this.handleTeacherPhoneNumberFieldChange}
+                type="text"
+                error={this.state.teacherPhoneNumberFieldValidationError}
+              />
+            </FormLayout.Group>
+            <FormLayout.Group>
+              <TextField
+                label="Teacher Specialization"
+                value={this.state.teacherSpecializationFieldValue}
+                onChange={this.handleTeacherSpecializationFieldChange}
+                type="text"
+                error={this.state.teacherSpecializationFieldValidationError}
+              />
+              <Select
+                label="Branch"
+                options={this.state.branchOptions}
+                onChange={this.handleBranchChange}
+                value={this.state.selectedBranch}
+                placeholder="Select Branch"
+                error={this.state.branchSelectValidationError}
+              />
+            </FormLayout.Group>
           </FormLayout>
         </Modal.Section>
       </Modal>
@@ -78,12 +120,16 @@ class Teachers extends React.Component {
     const { SearchBar } = Search;
 
     const columns = [{
-      dataField: 'subjectName',
-      text: 'Subject Name',
+      dataField: 'teacherName',
+      text: 'Teacher Name',
       sort: true
     }, {
-      dataField: 'subjectCode',
-      text: 'Subject Code',
+      dataField: 'teacherPhoneNumber',
+      text: 'Phone Number',
+      sort: true
+    }, {
+      dataField: 'teacherSpecialization',
+      text: 'Specialization',
       sort: true
     }
     ];
@@ -125,13 +171,45 @@ class Teachers extends React.Component {
     this.setState({ showTeachersModal: true });
   }
 
-  handleSubjectNameFieldChange = (subjectNameFieldValue) => {
-    this.setState({ subjectNameFieldValue });
+  handleTeacherNameFieldChange = (teacherNameFieldValue) => {
+    this.setState({ teacherNameFieldValue, teacherNameFieldValidationError: "" });
   };
 
-  handleSubjectCodeFieldChange = (subjectCodeFieldValue) => {
-    this.setState({ subjectCodeFieldValue });
+  handleTeacherPhoneNumberFieldChange = (teacherPhoneNumberFieldValue) => {
+    this.setState({ teacherPhoneNumberFieldValue, teacherPhoneNumberFieldValidationError: "" });
   };
+
+  handleTeacherSpecializationFieldChange = (teacherSpecializationFieldValue) => {
+    this.setState({ teacherSpecializationFieldValue, teacherSpecializationFieldValidationError: "" });
+  };
+
+  handleBranchChange = (newValue) => {
+    this.setState({ selectedBranch: newValue, branchSelectValidationError: "" });
+  };
+
+  validate = () => {
+    if (validator.isEmpty(this.state.teacherNameFieldValue, { ignore_whitespace: true })) {
+      var teacherNameInvalid = true;
+      this.setState({ teacherNameFieldValidationError: "Teacher Name cannot be empty" })
+    }
+    if (!validator.isMobilePhone(this.state.teacherPhoneNumberFieldValue) || this.state.teacherPhoneNumberFieldValue.length !== 10) {
+      var teacherPhoneNumberInvalid = true;
+      this.setState({ teacherPhoneNumberFieldValidationError: "Teacher phone number is invalid" })
+    }
+    if (validator.isEmpty(this.state.teacherSpecializationFieldValue, { ignore_whitespace: true })) {
+      var teacherSpecializationInvalid = true;
+      this.setState({ teacherSpecializationFieldValidationError: "Teacher Specialization cannot be empty" })
+    }
+    if (!this.state.selectedBranch) {
+      var branchInvalid = true;
+      this.setState({ branchSelectValidationError: "Branch is required" })
+    }
+    if (teacherNameInvalid || teacherPhoneNumberInvalid || teacherSpecializationInvalid) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
   handleshowTeachersModalClose = () => {
     this.resetFields();
@@ -140,31 +218,42 @@ class Teachers extends React.Component {
   resetFields = () => {
     this.setState({
       showTeachersModal: false,
-      subjectNameFieldValue: "",
-      subjectCodeFieldValue: ""
+      selectedBranch: "",
+      teacherNameFieldValue: "",
+      teacherPhoneNumberFieldValue: "",
+      teacherSpecializationFieldValue: "",
+      teacherNameFieldValidationError: "",
+      teacherPhoneNumberFieldValidationError: "",
+      teacherSpecializationFieldValidationError: "",
+      branchSelectValidationError: ""
     });
   }
   showSubmitMessage = () => {
-    var data = {
-      sName: this.state.subjectNameFieldValue,
-      sCode: this.state.subjectCodeFieldValue,
-    };
-    this.resetFields();
-    Axios({
-      method: "post",
-      url: "http://www.srmheavens.com/erp/subject/",
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': this.props.token
-      },
-      data: data
-    }).then(response => response.data)
-      .then(response => {
-        console.log('Success:', JSON.stringify(response));
-        this.fetchData();
-        this.setState({ showTeachersModal: false });
-      })
-      .catch(error => console.error('Error:', error));
+    var valid = this.validate();
+    if (valid) {
+      var data = {
+        tName: this.state.teacherNameFieldValue,
+        tPhone: this.state.teacherPhoneNumberFieldValue,
+        tSpecialization: this.state.teacherSpecializationFieldValue,
+        bName: this.state.selectedBranch
+      };
+      this.resetFields();
+      Axios({
+        method: "post",
+        url: "http://www.srmheavens.com/erp/teacher/",
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': this.props.token
+        },
+        data: data
+      }).then(response => response.data)
+        .then(response => {
+          console.log('Success:', JSON.stringify(response));
+          this.fetchData();
+          this.setState({ showTeachersModal: false });
+        })
+        .catch(error => console.error('Error:', error));
+    }
   }
 }
 

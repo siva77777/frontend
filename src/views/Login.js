@@ -11,6 +11,7 @@ class Login extends React.Component {
         this.state = {
             userNameFieldValue: "",
             passwordFieldValue: "",
+            user: "",
             showHomePage: false
         }
     }
@@ -18,13 +19,13 @@ class Login extends React.Component {
         if (this.state.showHomePage) {
             return (
                 <Router>
-                    <Route path="/" render={(props) => <App {...props} token={this.state.token} />} />
+                    <Route path="/" render={(props) => <App {...props} token={this.state.token} user={this.state.user} />} />
                 </Router>
             )
         } else {
             return (
                 <div style={{ width: "330px", height: "694px", margin: "auto", top: "0%", bottom: "0%", left: "0%", right: "0%" }}>
-                <img src="src/images/srmHeavensLogo.png" width="124" height="94" style={{display: "block", margin: "59px 103px", backgroundColor: "black"}}/>
+                    <img src="src/images/srmHeavensLogo.png" width="124" height="94" style={{ display: "block", margin: "59px 103px", backgroundColor: "black" }} />
                     <FormLayout>
                         <TextField
                             label="User Name"
@@ -59,9 +60,8 @@ class Login extends React.Component {
         };
         Axios.post(apiBaseUrl, payload).then(function (response) {
             if (response.status == 200) {
-                console.log(response.data.token, "111");
                 var token = response.data.token;
-                this.setState({ token: token, showHomePage: true });
+                this.setState({ token: token, showHomePage: true, user: response.data.user });
             }
         }.bind(this))
     };

@@ -1,9 +1,11 @@
 import React from 'react';
-import { Button, FormLayout, Modal, Page, RadioButton, Select, TextField } from '@shopify/polaris';
+import { Button, FormLayout, Modal, Page, Popover, RadioButton, Select, TextField } from '@shopify/polaris';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import Axios from 'axios';
+import validator from 'validator';
+import Calendar from 'react-calendar';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -29,14 +31,17 @@ class Students extends React.Component {
       showFirstPage: true,
       showSecondPage: false,
       showThirdPage: false,
+      date: new Date(),
+      active: false,
       firstNameFieldValue: "",
       lastNameFieldValue: "",
       emailAddressFieldValue: "",
       phoneNumberFieldValue: "",
-      dateFieldValue: "",
-      yearFieldValue: "",
       addressFieldValue: "",
       fatherFirstNameFieldValue: "",
+      fatherLastNameFieldValue: "",
+      motherFirstNameFieldValue: "",
+      motherLastNameFieldValue: "",
       fatherOccupationFieldValue: "",
       motherOccupationFieldValue: "",
       parentPhoneNumberFieldValue: "",
@@ -53,7 +58,6 @@ class Students extends React.Component {
       selectedClass: "",
       selectedGender: "",
       selectedCategory: "",
-      selectedMonth: "",
       selectedBranch: "",
       selectedBus: "",
       selectedHall: "",
@@ -64,6 +68,15 @@ class Students extends React.Component {
       hallSelectValidationError: "",
       categorySelectValidationError: "",
       branchSelectValidationError: "",
+      firstNameFieldValidationError: "",
+      lastNameFieldValidationError: "",
+      emailAddressFieldValidationError: "",
+      phoneNumberFieldValidationError: "",
+      fatherFirstNameFieldValidationError: "",
+      fatherLastNameFieldValidationError: "",
+      motherFirstNameFieldValidationError: "",
+      motherLastNameFieldValidationError: "",
+      parentPhoneNumberFieldValidationError: "",
       isLoaded: false
     };
   }
@@ -147,20 +160,15 @@ class Students extends React.Component {
   }
 
   render() {
-    const monthOptions = [
-      { label: 'January', value: "01" },
-      { label: 'February', value: "02" },
-      { label: 'March', value: "03" },
-      { label: 'April', value: "04" },
-      { label: 'May', value: "05" },
-      { label: 'June', value: "06" },
-      { label: 'July', value: "07" },
-      { label: 'August', value: "08" },
-      { label: 'September', value: "09" },
-      { label: 'October', value: "10" },
-      { label: 'November', value: "11" },
-      { label: 'December', value: "12" },
-    ];
+    const year = this.state.date.getFullYear();
+    const month = `${this.state.date.getMonth() + 1}`.padStart(2, 0);
+    const date = `${this.state.date.getDate()}`.padStart(2, 0);
+    const stringDate = [year, month, date].join("-");
+    const activator = (
+      <div className="calendar">
+        <TextField value={stringDate} onFocus={this.handleShowCalendar} />
+      </div>
+    );
     const genderOptions = [
       { label: 'Male', value: "MALE" },
       { label: 'Female', value: "FEMALE" }
@@ -196,12 +204,14 @@ class Students extends React.Component {
                   value={this.state.firstNameFieldValue}
                   onChange={this.handleFirstNameFieldChange}
                   type="text"
+                  error={this.state.firstNameFieldValidationError}
                 />
                 <TextField
                   label="Last name"
                   value={this.state.lastNameFieldValue}
                   onChange={this.handleLastNameFieldChange}
                   type="text"
+                  error={this.state.lastNameFieldValidationError}
                 />
               </FormLayout.Group>
               <FormLayout.Group>
@@ -228,34 +238,23 @@ class Students extends React.Component {
                 onChange={this.handleEmailAddressFieldChange}
                 type="email"
                 placeholder="name@email.com"
+                error={this.state.emailAddressFieldValidationError}
               />
               <TextField
                 label="Phone number"
                 value={this.state.phoneNumberFieldValue}
                 onChange={this.handlePhoneNumberFieldChange}
-                type="tel"
+                error={this.state.phoneNumberFieldValidationError}
               />
               <FormLayout.Group condensed>
-                <Select
-                  label="Month"
-                  options={monthOptions}
-                  onChange={this.handleMonthChange}
-                  value={this.state.selectedMonth}
-                  placeholder="Select Month"
-                  error={this.state.monthSelectValidationError}
-                />
-                <TextField
-                  label="Date"
-                  value={this.state.dateFieldValue}
-                  onChange={this.handleDateFieldChange}
-                  type="text"
-                />
-                <TextField
-                  label="Year"
-                  value={this.state.yearFieldValue}
-                  onChange={this.handleYearFieldChange}
-                  type="text"
-                />
+                <div>Date of birth:{'\u00A0'}{'\u00A0'}</div>
+                <Popover
+                  active={this.state.active}
+                  activator={activator}
+                  onClose={this.togglePopover}
+                >
+                  <Calendar onChange={this.handleDateChange} value={this.state.date} maxDate={new Date()} />
+                </Popover>
               </FormLayout.Group>
               <FormLayout.Group condensed>
                 <Select
@@ -341,24 +340,28 @@ class Students extends React.Component {
                   value={this.state.fatherFirstNameFieldValue}
                   onChange={this.handleFatherFirstNameFieldChange}
                   type="text"
+                  error={this.state.fatherFirstNameFieldValidationError}
                 />
                 <TextField
                   label="Father Last name"
                   value={this.state.fatherLastNameFieldValue}
                   onChange={this.handleFatherLastNameFieldChange}
                   type="text"
+                  error={this.state.fatherLastNameFieldValidationError}
                 />
                 <TextField
                   label="Mother First name"
                   value={this.state.motherFirstNameFieldValue}
                   onChange={this.handleMotherFirstNameFieldChange}
                   type="text"
+                  error={this.state.motherFirstNameFieldValidationError}
                 />
                 <TextField
                   label="Mother Last name"
                   value={this.state.motherLastNameFieldValue}
                   onChange={this.handleMotherLastNameFieldChange}
                   type="text"
+                  error={this.state.motherLastNameFieldValidationError}
                 />
                 <TextField
                   label="Father occupation"
@@ -389,6 +392,7 @@ class Students extends React.Component {
                   value={this.state.parentPhoneNumberFieldValue}
                   onChange={this.handleParentPhoneNumberFieldChange}
                   type="text"
+                  error={this.state.parentPhoneNumberFieldValidationError}
                 />
               </FormLayout.Group>
             </FormLayout>
@@ -526,28 +530,20 @@ class Students extends React.Component {
   }
 
   handleFirstNameFieldChange = (firstNameFieldValue) => {
-    this.setState({ firstNameFieldValue });
+    this.setState({ firstNameFieldValue, firstNameFieldValidationError: "" });
   };
 
   handleLastNameFieldChange = (lastNameFieldValue) => {
-    this.setState({ lastNameFieldValue });
+    this.setState({ lastNameFieldValue, lastNameFieldValidationError: "" });
   };
 
 
   handleEmailAddressFieldChange = (emailAddressFieldValue) => {
-    this.setState({ emailAddressFieldValue });
+    this.setState({ emailAddressFieldValue, emailAddressFieldValidationError: "" });
   };
 
   handlePhoneNumberFieldChange = (phoneNumberFieldValue) => {
-    this.setState({ phoneNumberFieldValue });
-  };
-
-  handleDateFieldChange = (dateFieldValue) => {
-    this.setState({ dateFieldValue });
-  };
-
-  handleYearFieldChange = (yearFieldValue) => {
-    this.setState({ yearFieldValue });
+    this.setState({ phoneNumberFieldValue, phoneNumberFieldValidationError: "" });
   };
 
   handleAddressFieldChange = (addressFieldValue) => {
@@ -555,19 +551,19 @@ class Students extends React.Component {
   }
 
   handleFatherFirstNameFieldChange = (fatherFirstNameFieldValue) => {
-    this.setState({ fatherFirstNameFieldValue });
+    this.setState({ fatherFirstNameFieldValue, fatherFirstNameFieldValidationError: "" });
   }
 
   handleFatherLastNameFieldChange = (fatherLastNameFieldValue) => {
-    this.setState({ fatherLastNameFieldValue });
+    this.setState({ fatherLastNameFieldValue, fatherLastNameFieldValidationError: "" });
   }
 
   handleMotherFirstNameFieldChange = (motherFirstNameFieldValue) => {
-    this.setState({ motherFirstNameFieldValue });
+    this.setState({ motherFirstNameFieldValue, motherFirstNameFieldValidationError: "" });
   }
 
   handleMotherLastNameFieldChange = (motherLastNameFieldValue) => {
-    this.setState({ motherLastNameFieldValue });
+    this.setState({ motherLastNameFieldValue, motherLastNameFieldValidationError: "" });
   }
 
   handleFatherOccupationFieldChange = (fatherOccupationFieldValue) => {
@@ -576,10 +572,6 @@ class Students extends React.Component {
 
   handleMotherOccupationFieldChange = (motherOccupationFieldValue) => {
     this.setState({ motherOccupationFieldValue });
-  }
-
-  handleFatherPhoneNumberFieldChange = (parentPhoneNumberFieldValue) => {
-    this.setState({ parentPhoneNumberFieldValue });
   }
 
   handleGuardianNameFieldChange = (guardianNameFieldValue) => {
@@ -591,7 +583,15 @@ class Students extends React.Component {
   }
 
   handleParentPhoneNumberFieldChange = (parentPhoneNumberFieldValue) => {
-    this.setState({ parentPhoneNumberFieldValue });
+    this.setState({ parentPhoneNumberFieldValue, parentPhoneNumberFieldValidationError: "" });
+  }
+
+  handleShowCalendar = () => {
+    this.setState({ active: true });
+  }
+
+  handleDateChange = (date) => {
+    this.setState({ date, active: false });
   }
 
   handleBusFeeFieldChange = (busFeeFieldValue) => {
@@ -640,7 +640,10 @@ class Students extends React.Component {
   }
 
   handleShowStudentsModalThirdPage = () => {
-    this.setState({ showFirstPage: false, showSecondPage: false, showThirdPage: true });
+    var isValid = this.validateSecondPage();
+    if (isValid) {
+      this.setState({ showFirstPage: false, showSecondPage: false, showThirdPage: true });
+    }
   }
 
   handleClassChange = (newValue) => {
@@ -649,10 +652,6 @@ class Students extends React.Component {
 
   handleBranchChange = (newValue) => {
     this.setState({ selectedBranch: newValue, branchSelectValidationError: "" });
-  };
-
-  handleMonthChange = (newValue) => {
-    this.setState({ selectedMonth: newValue, monthSelectValidationError: "" });
   };
 
   handleGenderChange = (newValue) => {
@@ -680,31 +679,78 @@ class Students extends React.Component {
   }
 
   validateFirstPage = () => {
+    if (validator.isEmpty(this.state.firstNameFieldValue, { ignore_whitespace: true })) {
+      var firstNameInvalid = true;
+      this.setState({ firstNameFieldValidationError: "Student First Name cannot be empty" })
+    }
+    if (validator.isEmpty(this.state.lastNameFieldValue, { ignore_whitespace: true })) {
+      var lastNameInvalid = true;
+      this.setState({ lastNameFieldValidationError: "Student Last Name cannot be empty" })
+    }
+    if (!validator.isEmail(this.state.emailAddressFieldValue)) {
+      var emailInvalid = true;
+      this.setState({ emailAddressFieldValidationError: "Invalid Email ID" })
+    }
+    if (!validator.isMobilePhone(this.state.phoneNumberFieldValue) || this.state.phoneNumberFieldValue.length !== 10) {
+      var phoneNumberInvalid = true;
+      this.setState({ phoneNumberFieldValidationError: "Invalid Mobile number" })
+    }
     if (!this.state.selectedClass) {
-      this.setState({classSelectValidationError: "Class is required"})
+      var classInvalid = true;
+      this.setState({ classSelectValidationError: "Class is required" })
     }
     if (!this.state.selectedBranch) {
-      this.setState({branchSelectValidationError: "Branch is required"})
-    }
-    if (!this.state.selectedMonth) {
-      this.setState({monthSelectValidationError: "Month is required"})
+      var branchInvalid = true;
+      this.setState({ branchSelectValidationError: "Branch is required" })
     }
     if (!this.state.selectedGender) {
-      this.setState({genderSelectValidationError: "Gender is required"})
+      var genderInvalid = true;
+      this.setState({ genderSelectValidationError: "Gender is required" })
     }
     if (!this.state.selectedCategory) {
-      this.setState({categorySelectValidationError: "Category is required"})
+      var categoryInvalid = true;
+      this.setState({ categorySelectValidationError: "Category is required" })
     }
     if (this.state.value === "DAY SCHOLAR") {
       if (!this.state.selectedBus) {
-        this.setState({busSelectValidationError: "Bus is required"})
+        var busInvalid = true;
+        this.setState({ busSelectValidationError: "Bus is required" })
       }
     } else {
       if (!this.state.selectedHall) {
-        this.setState({hallSelectValidationError: "Hall is required"})
+        var hallInvalid = true;
+        this.setState({ hallSelectValidationError: "Hall is required" })
       }
     }
-    if (!this.state.selectedClass || !this.state.selectedBranch || !this.state.selectedMonth || !this.state.selectedGender || !this.state.selectedCategory || (!this.state.selectedBus && !this.state.selectedHall)) {
+    if (firstNameInvalid || lastNameInvalid || emailInvalid || phoneNumberInvalid || classInvalid || branchInvalid || genderInvalid || categoryInvalid || (this.state.value === "DAY SCHOLAR" && busInvalid) || (this.state.value !== "DAY SCHOLAR" && hallInvalid)) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  validateSecondPage = () => {
+    if (validator.isEmpty(this.state.fatherFirstNameFieldValue, { ignore_whitespace: true })) {
+      var fatherFirstNameInvalid = true;
+      this.setState({ fatherFirstNameFieldValidationError: "Father First Name cannot be empty" })
+    }
+    if (validator.isEmpty(this.state.fatherLastNameFieldValue, { ignore_whitespace: true })) {
+      var fatherLastNameInvalid = true;
+      this.setState({ fatherLastNameFieldValidationError: "Father Last Name cannot be empty" })
+    }
+    if (validator.isEmpty(this.state.motherFirstNameFieldValue, { ignore_whitespace: true })) {
+      var motherFirstNameInvalid = true;
+      this.setState({ motherFirstNameFieldValidationError: "Mother First Name cannot be empty" })
+    }
+    if (validator.isEmpty(this.state.motherLastNameFieldValue, { ignore_whitespace: true })) {
+      var motherLastNameInvalid = true;
+      this.setState({ motherLastNameFieldValidationError: "Mother Last Name cannot be empty" })
+    }
+    if (!validator.isMobilePhone(this.state.parentPhoneNumberFieldValue) || this.state.parentPhoneNumberFieldValue.length !== 10) {
+      var parentPhoneNumberInvalid = true;
+      this.setState({ parentPhoneNumberFieldValidationError: "Parent phone number is invalid" })
+    }
+    if (fatherFirstNameInvalid || fatherLastNameInvalid || motherFirstNameInvalid || motherLastNameInvalid || parentPhoneNumberInvalid) {
       return false;
     } else {
       return true;
@@ -718,8 +764,6 @@ class Students extends React.Component {
       lastNameFieldValue: "",
       emailAddressFieldValue: "",
       phoneNumberFieldValue: "",
-      dateFieldValue: "",
-      yearFieldValue: "",
       addressFieldValue: "",
       fatherFirstNameFieldValue: "",
       fatherLastNameFieldValue: "",
@@ -736,7 +780,6 @@ class Students extends React.Component {
       selectedClass: "",
       selectedGender: "",
       selectedCategory: "",
-      selectedMonth: "",
       selectedBranch: "",
       selectedBus: "",
       selectedHall: "",
@@ -746,7 +789,23 @@ class Students extends React.Component {
       labFeeFieldValue: _LAB_FEE,
       miscellanousFeeFieldValue: _MISCELLANOUS_FEE,
       concessionFeeFieldValue: _CONCESSION_FEE,
-      totalFeeFieldValue: _BUS_FEE + _HOSTEL_FEE + _ADMISSION_FEE + _LAB_FEE + _MISCELLANOUS_FEE - _CONCESSION_FEE
+      totalFeeFieldValue: _BUS_FEE + _HOSTEL_FEE + _ADMISSION_FEE + _LAB_FEE + _MISCELLANOUS_FEE - _CONCESSION_FEE,
+      classSelectValidationError: "",
+      busSelectValidationError: "",
+      genderSelectValidationError: "",
+      monthSelectValidationError: "",
+      hallSelectValidationError: "",
+      categorySelectValidationError: "",
+      branchSelectValidationError: "",
+      firstNameFieldValidationError: "",
+      lastNameFieldValidationError: "",
+      emailAddressFieldValidationError: "",
+      phoneNumberFieldValidationError: "",
+      fatherFirstNameFieldValidationError: "",
+      fatherLastNameFieldValidationError: "",
+      motherFirstNameFieldValidationError: "",
+      motherLastNameFieldValidationError: "",
+      parentPhoneNumberFieldValidationError: "",
     });
   }
 
@@ -755,6 +814,9 @@ class Students extends React.Component {
   }
 
   showSubmitMessage = () => {
+    const year = this.state.date.getFullYear();
+    const month = `${this.state.date.getMonth() + 1}`.padStart(2, 0);
+    const date = `${this.state.date.getDate()}`.padStart(2, 0);
     var data = {
       ffName: this.state.fatherFirstNameFieldValue,
       flName: this.state.fatherLastNameFieldValue,
@@ -770,7 +832,7 @@ class Students extends React.Component {
       lName: this.state.lastNameFieldValue,
       gender: this.state.selectedGender,
       category: this.state.selectedCategory,
-      dob: this.state.yearFieldValue + "-" + this.state.selectedMonth + "-" + this.state.dateFieldValue,
+      dob: year + "-" + month + "-" + date,
       email: this.state.emailAddressFieldValue,
       address: this.state.addressFieldValue,
       bName: this.state.selectedBranch,

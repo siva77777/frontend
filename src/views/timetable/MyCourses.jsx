@@ -22,7 +22,6 @@ class MyCourses extends Component {
   }
 
   componentDidMount() {
-    console.log(`https://my-json-server.typicode.com/a-bishop/timetable-server-${this.state.section}/Courses`);
     fetch(`https://my-json-server.typicode.com/a-bishop/timetable-server-${this.state.section}/Courses`)
       .then(response => this.handleHTTPErrors(response))
       .then(response => response.json())
@@ -51,7 +50,6 @@ class MyCourses extends Component {
     this.setState({
       section: e.target.value
     }, () => {
-      console.log(this.state.section);
       fetch(`https://my-json-server.typicode.com/a-bishop/timetable-server-${this.state.section}/Courses`)
         .then(response => this.handleHTTPErrors(response))
         .then(response => response.json())

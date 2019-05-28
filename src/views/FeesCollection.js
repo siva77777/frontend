@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, FormLayout, Modal, Page, TextField } from '@shopify/polaris';
+import { Page } from '@shopify/polaris';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -10,12 +10,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css'
 
 
-class Subjects extends React.Component {
+class FeesCollection extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       rows: [],
-      showSubjectsModal: false,
       subjectNameFieldValue: "",
       subjectCodeFieldValue: "",
       isLoaded: false
@@ -46,35 +45,6 @@ class Subjects extends React.Component {
   }
 
   render() {
-    var modalMarkup;
-    modalMarkup = (
-      <Modal
-        open={this.state.showSubjectsModal}
-        onClose={this.handleshowSubjectsModalClose}
-        title="Heading"
-        primaryAction={{
-          content: 'Submit',
-          onAction: this.showSubmitMessage,
-        }}
-      >
-        <Modal.Section>
-          <FormLayout>
-            <TextField
-              label="Subject Name"
-              value={this.state.subjectNameFieldValue}
-              onChange={this.handleSubjectNameFieldChange}
-              type="text"
-            />
-            <TextField
-              label="Subject Code"
-              value={this.state.subjectCodeFieldValue}
-              onChange={this.handleSubjectCodeFieldChange}
-              type="text"
-            />
-          </FormLayout>
-        </Modal.Section>
-      </Modal>
-    );
     const { SearchBar } = Search;
 
     const columns = [{
@@ -90,8 +60,6 @@ class Subjects extends React.Component {
 
     var abc = (
       <Page>
-        {modalMarkup}
-        <div style={{ marginLeft: "89%", marginBottom: "1%" }}><Button primary onClick={this.showSubjectsModal}>Add Subject</Button></div>
         <ToolkitProvider
           keyField="id"
           data={this.state.rows}
@@ -121,9 +89,6 @@ class Subjects extends React.Component {
       return null;
     }
   }
-  showSubjectsModal = () => {
-    this.setState({ showSubjectsModal: true });
-  }
 
   handleSubjectNameFieldChange = (subjectNameFieldValue) => {
     this.setState({ subjectNameFieldValue });
@@ -133,13 +98,8 @@ class Subjects extends React.Component {
     this.setState({ subjectCodeFieldValue });
   };
 
-  handleshowSubjectsModalClose = () => {
-    this.resetFields();
-  };
-
   resetFields = () => {
     this.setState({
-      showSubjectsModal: false,
       subjectNameFieldValue: "",
       subjectCodeFieldValue: ""
     });
@@ -162,10 +122,9 @@ class Subjects extends React.Component {
       .then(response => {
         console.log('Success:', JSON.stringify(response));
         this.fetchData();
-        this.setState({ showSubjectsModal: false });
       })
       .catch(error => console.error('Error:', error));
   }
 }
 
-export default Subjects;
+export default FeesCollection;

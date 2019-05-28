@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppProvider, Frame, Navigation, TopBar } from '@shopify/polaris';
+import { AppProvider, Frame, Navigation, Select, TopBar } from '@shopify/polaris';
 import { Route } from "react-router-dom";
 import Students from './views/Students';
 import Buses from './views/Buses';
@@ -7,26 +7,59 @@ import Hostels from './views/Hostels';
 import Standards from './views/Standards';
 import Subjects from './views/Subjects';
 import Teachers from './views/Teachers';
+import FeesCollection from './views/FeesCollection';
+import Axios from 'axios';
 
 class App extends React.Component {
 
-  state = {
-    isLoading: false,
-    token: "",
-    showMobileNavigation: false
-  };
-
   constructor(props) {
     super(props);
+    this.fetchData();
+    this.state = {
+      isLoading: false,
+      token: "",
+      showMobileNavigation: false,
+      branchOptions: []
+    }
+  }
+
+  fetchData() {
+    Axios({
+      method: "get",
+      url: "http://www.srmheavens.com/erp/branch/",
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': this.props.token
+      }
+    }).then(response => response.data).then(data => {
+      var options = [];
+      for (var i = 0; i < data.length; i++) {
+        options.push({ label: data[i].SBi_branchName, value: data[i].SBi_branchName });
+      }
+      this.setState({ branchOptions: options });
+    });
   }
 
   render() {
 
     const userMenuMarkup = (
       <TopBar.UserMenu
-        name="Helen B."
+        name={this.props.user}
         detail="Administrator"
         initials="H"
+      />
+    );
+    const secondaryMenuMarkup = (
+      <TopBar.Menu
+        activatorContent={
+          <div style={{ color: "black", textAlign: "left", width: "200px" }}>
+            <Select
+              options={this.state.branchOptions}
+              onChange={this.handleBranchChange}
+              value={this.state.selectedBranch}
+              placeholder="Select Branch" />
+          </div>
+        }
       />
     );
 
@@ -34,6 +67,7 @@ class App extends React.Component {
       <TopBar
         showNavigationToggle={true}
         userMenu={userMenuMarkup}
+        secondaryMenu={secondaryMenuMarkup}
         onNavigationToggle={this.state.showMobileNavigation}
       />
     );
@@ -80,7 +114,8 @@ class App extends React.Component {
             },
             {
               label: 'Fees Collection',
-              icon: 'orders'
+              icon: 'orders',
+              onClick: () => this.props.history.push('/feesCollection')
             },
             {
               label: 'Buses',
@@ -124,6 +159,7 @@ class App extends React.Component {
             <Route path="/standards" render={() => <Standards token={this.props.token} />} />
             <Route path="/subjects" render={() => <Subjects token={this.props.token} />} />
             <Route path="/teachers" render={() => <Teachers token={this.props.token} />} />
+            <Route path="/feesCollection" render={() => <FeesCollection token={this.props.token} />} />
           </Frame>
         </AppProvider>
       </div>
@@ -135,6 +171,9 @@ class App extends React.Component {
   hideMobileNavigation = () => {
     this.setState({ showMobileNavigation: false });
   }
+  handleBranchChange = (newValue) => {
+    this.setState({ selectedBranch: newValue });
+  };
 }
 
 export default App;
