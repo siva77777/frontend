@@ -148,14 +148,12 @@ class FeesCollection extends React.Component {
       }
     }, {
       dataField: 'details',
-      text: 'Details',
       formatter: this.renderDetailsButtons,
       headerStyle: (colum, colIndex) => {
         return { width: "10%" };
       }
     }, {
       dataField: 'fee',
-      text: 'Collect Fees',
       formatter: this.renderCollectFeesButtons,
       headerStyle: (colum, colIndex) => {
         return { width: "15%" };

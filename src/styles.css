@@ -39,3 +39,7 @@
 .filter-label {
   display: none
 }
+
+.table-bordered td, .table-bordered th {
+  border: none
+}

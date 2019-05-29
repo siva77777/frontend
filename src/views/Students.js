@@ -70,7 +70,6 @@ class Students extends React.Component {
       branchSelectValidationError: "",
       firstNameFieldValidationError: "",
       lastNameFieldValidationError: "",
-      emailAddressFieldValidationError: "",
       phoneNumberFieldValidationError: "",
       fatherFirstNameFieldValidationError: "",
       fatherLastNameFieldValidationError: "",
@@ -238,7 +237,6 @@ class Students extends React.Component {
                 onChange={this.handleEmailAddressFieldChange}
                 type="email"
                 placeholder="name@email.com"
-                error={this.state.emailAddressFieldValidationError}
               />
               <TextField
                 label="Phone number"
@@ -498,7 +496,7 @@ class Students extends React.Component {
     var abc = (
       <Page>
         {modalMarkup}
-        <div style={{ marginLeft: "89%", marginBottom: "1%" }}><Button primary onClick={this.showStudentsModal}>Add Student</Button></div>
+        <div style={{ marginBottom: "1%", float: "right" }}><Button primary onClick={this.showStudentsModal}>Add Student</Button></div>
         <ToolkitProvider
           keyField="id"
           data={this.state.rows}
@@ -518,6 +516,7 @@ class Students extends React.Component {
                       dataField: 'studentID',
                       order: 'asc'
                     }]}
+                    rowStyle={{border: "none"}}
                   />
                 </div>
               )
@@ -543,7 +542,7 @@ class Students extends React.Component {
 
 
   handleEmailAddressFieldChange = (emailAddressFieldValue) => {
-    this.setState({ emailAddressFieldValue, emailAddressFieldValidationError: "" });
+    this.setState({ emailAddressFieldValue });
   };
 
   handlePhoneNumberFieldChange = (phoneNumberFieldValue) => {
@@ -691,10 +690,6 @@ class Students extends React.Component {
       var lastNameInvalid = true;
       this.setState({ lastNameFieldValidationError: "Student Last Name cannot be empty" })
     }
-    if (!validator.isEmail(this.state.emailAddressFieldValue)) {
-      var emailInvalid = true;
-      this.setState({ emailAddressFieldValidationError: "Invalid Email ID" })
-    }
     if (!validator.isMobilePhone(this.state.phoneNumberFieldValue) || this.state.phoneNumberFieldValue.length !== 10) {
       var phoneNumberInvalid = true;
       this.setState({ phoneNumberFieldValidationError: "Invalid Mobile number" })
@@ -804,7 +799,6 @@ class Students extends React.Component {
       branchSelectValidationError: "",
       firstNameFieldValidationError: "",
       lastNameFieldValidationError: "",
-      emailAddressFieldValidationError: "",
       phoneNumberFieldValidationError: "",
       fatherFirstNameFieldValidationError: "",
       fatherLastNameFieldValidationError: "",

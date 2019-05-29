@@ -122,7 +122,7 @@ class Standards extends React.Component {
     var abc = (
       <Page>
         {modalMarkup}
-        <div style={{ marginLeft: "89%", marginBottom: "1%" }}><Button primary onClick={this.showStandardsModal}>Add Standard</Button></div>
+        <div style={{ marginBottom: "1%", float: "right" }}><Button primary onClick={this.showStandardsModal}>Add Standard</Button></div>
         <ToolkitProvider
           keyField="id"
           data={this.state.rows}
