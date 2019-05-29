@@ -1,7 +1,7 @@
 import React from 'react';
 import Axios from 'axios';
 import App from '../App';
-import { Button, FormLayout, TextField } from '@shopify/polaris';
+import { Button, DisplayText, FormLayout, TextField } from '@shopify/polaris';
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
 
@@ -12,7 +12,8 @@ class Login extends React.Component {
             userNameFieldValue: "",
             passwordFieldValue: "",
             user: "",
-            showHomePage: false
+            showHomePage: false,
+            errorMessage: ""
         }
     }
     render() {
@@ -40,6 +41,7 @@ class Login extends React.Component {
                             type="password"
                         />
                         <Button fullWidth primary onClick={this.handleLogin}>Login</Button>
+                        {this.state.errorMessage ? <div style={{ textAlign: "center", color: "red" }}><DisplayText size="small">{this.state.errorMessage}</DisplayText></div> : null}
                     </FormLayout>
                 </div>
             );
@@ -63,7 +65,9 @@ class Login extends React.Component {
                 var token = response.data.token;
                 this.setState({ token: token, showHomePage: true, user: response.data.user });
             }
-        }.bind(this))
+        }.bind(this)).catch(function (error) {
+            this.setState({ errorMessage: error.response.data.message })
+        }.bind(this));
     };
 }
 

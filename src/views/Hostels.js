@@ -179,6 +179,10 @@ class Hostels extends React.Component {
                     {...props.baseProps}
                     pagination={paginationFactory()}
                     bootstrap4
+                    defaultSorted = {[{
+                      dataField: 'hallName',
+                      order: 'asc'
+                    }]}
                   />
                 </div>
               )

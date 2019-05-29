@@ -9,7 +9,6 @@ import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css';
-import MyCourses from './timetable/MyCourses.jsx';
 
 class Standards extends React.Component {
   constructor(props) {
@@ -21,14 +20,12 @@ class Standards extends React.Component {
       showStandardsModal: false,
       standardFieldValue: "",
       capacityFieldValue: "",
-      showTimeTable: false,
       isLoaded: false,
       selectedBranch: "",
       standardFieldValidationError: "",
       capacityFieldValidationError: "",
       branchSelectValidationError: ""
     };
-    this.renderButtons = this.renderButtons.bind(this);
   }
 
   componentDidMount() {
@@ -114,7 +111,6 @@ class Standards extends React.Component {
     const columns = [{
       dataField: 'standard',
       text: 'Standard',
-      formatter: this.renderButtons,
       sort: true
     }, {
       dataField: 'capacity',
@@ -142,6 +138,10 @@ class Standards extends React.Component {
                     {...props.baseProps}
                     pagination={paginationFactory()}
                     bootstrap4
+                    defaultSorted = {[{
+                      dataField: 'standard',
+                      order: 'asc'
+                    }]}
                   />
                 </div>
               )
@@ -151,9 +151,7 @@ class Standards extends React.Component {
       </Page>
     );
 
-    if (this.state.showTimeTable) {
-      return <MyCourses />;
-    } else if (this.state.isLoaded) {
+    if (this.state.isLoaded) {
       return abc;
     } else {
       return null;
@@ -235,17 +233,6 @@ class Standards extends React.Component {
         })
         .catch(error => console.error('Error:', error));
     }
-  }
-  renderButtons(cell, row) {
-    return (
-      <a style={{ color: "blue", cursor: "pointer" }} onClick={this.show.bind(this, cell, row)}>
-        {cell}
-      </a>
-    );
-  }
-  show = (cell, row) => {
-    this.class = cell;
-    this.setState({ showTimeTable: true })
   }
 }
 

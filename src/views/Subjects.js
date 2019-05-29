@@ -107,6 +107,10 @@ class Subjects extends React.Component {
                     {...props.baseProps}
                     pagination={paginationFactory()}
                     bootstrap4
+                    defaultSorted = {[{
+                      dataField: 'subjectName',
+                      order: 'asc'
+                    }]}
                   />
                 </div>
               )

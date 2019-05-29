@@ -153,6 +153,10 @@ class Teachers extends React.Component {
                     {...props.baseProps}
                     pagination={paginationFactory()}
                     bootstrap4
+                    defaultSorted = {[{
+                      dataField: 'teacherName',
+                      order: 'asc'
+                    }]}
                   />
                 </div>
               )

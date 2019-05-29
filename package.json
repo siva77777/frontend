@@ -10,6 +10,7 @@
     "css-loader": "^2.1.1",
     "react": "^16.8.6",
     "react-bootstrap-table-next": "^3.1.2",
+    "react-bootstrap-table2-filter": "^1.1.9",
     "react-bootstrap-table2-paginator": "^2.0.6",
     "react-bootstrap-table2-toolkit": "^1.4.2",
     "react-calendar": "^2.19.0",
