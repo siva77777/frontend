@@ -73,7 +73,7 @@ class Standards extends React.Component {
       <Modal
         open={this.state.showStandardsModal}
         onClose={this.handleshowStandardsModalClose}
-        title="Heading"
+        title="Standard Details"
         primaryAction={{
           content: 'Submit',
           onAction: this.showSubmitMessage,

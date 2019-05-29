@@ -75,7 +75,7 @@ class Hostels extends React.Component {
       <Modal
         open={this.state.showHostelsModal}
         onClose={this.handleShowHostelsModalClose}
-        title="Heading"
+        title="Hostel Details"
         primaryAction={{
           content: 'Submit',
           onAction: this.showSubmitMessage,

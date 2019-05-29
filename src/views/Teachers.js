@@ -72,7 +72,7 @@ class Teachers extends React.Component {
       <Modal
         open={this.state.showTeachersModal}
         onClose={this.handleshowTeachersModalClose}
-        title="Heading"
+        title="Teacher Details"
         primaryAction={{
           content: 'Submit',
           onAction: this.showSubmitMessage,

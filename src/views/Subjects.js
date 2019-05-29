@@ -51,7 +51,7 @@ class Subjects extends React.Component {
       <Modal
         open={this.state.showSubjectsModal}
         onClose={this.handleshowSubjectsModalClose}
-        title="Heading"
+        title="Subject Details"
         primaryAction={{
           content: 'Submit',
           onAction: this.showSubmitMessage,

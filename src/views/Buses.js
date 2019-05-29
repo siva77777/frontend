@@ -77,7 +77,7 @@ class Buses extends React.Component {
       <Modal
         open={this.state.showBusesModal}
         onClose={this.handleShowBusesModalClose}
-        title="Heading"
+        title="Bus Details"
         primaryAction={{
           content: 'Submit',
           onAction: this.showSubmitMessage,

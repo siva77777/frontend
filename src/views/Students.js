@@ -186,7 +186,7 @@ class Students extends React.Component {
         <Modal
           open={this.state.showStudentsModal}
           onClose={this.handleShowStudentsModalClose}
-          title="Heading"
+          title="Student Details"
           primaryAction={{
             content: 'Continue',
             onAction: this.handleShowStudentsModalSecondPage,
@@ -322,7 +322,7 @@ class Students extends React.Component {
         <Modal
           open={this.state.showStudentsModal}
           onClose={this.handleShowStudentsModalClose}
-          title="Heading"
+          title="Parent Details"
           primaryAction={{
             content: 'Continue',
             onAction: this.handleShowStudentsModalThirdPage,
@@ -404,7 +404,7 @@ class Students extends React.Component {
         <Modal
           open={this.state.showStudentsModal}
           onClose={this.handleShowStudentsModalClose}
-          title="Heading"
+          title="Fee Details"
           primaryAction={{
             content: 'Submit',
             onAction: this.showSubmitMessage,
@@ -619,7 +619,7 @@ class Students extends React.Component {
   }
 
   calculateTotalFee = () => {
-    var totalFee = parseInt(this.state.busFeeFieldValue) + parseInt(this.state.hostelFeeFieldValue) + parseInt(this.state.admissionFeeFieldValue) + parseInt(this.state.labFeeFieldValue) + parseInt(this.state.miscellanousFeeFieldValue) - parseInt(this.state.concessionFeeFieldValue);
+    var totalFee = parseInt(this.state.busFeeFieldValue || 0) + parseInt(this.state.hostelFeeFieldValue || 0) + parseInt(this.state.admissionFeeFieldValue || 0) + parseInt(this.state.labFeeFieldValue || 0) + parseInt(this.state.miscellanousFeeFieldValue || 0) - parseInt(this.state.concessionFeeFieldValue || 0);
     this.setState({ totalFeeFieldValue: totalFee });
   }
 
@@ -838,12 +838,12 @@ class Students extends React.Component {
       address: this.state.addressFieldValue,
       bName: this.state.selectedBranch,
       rDetails: this.state.value,
-      busFee: this.state.busFeeFieldValue,
-      hostelFee: this.state.hostelFeeFieldValue,
-      admissionFee: this.state.admissionFeeFieldValue,
-      labFee: this.state.labFeeFieldValue,
-      miscellanousFee: this.state.miscellanousFeeFieldValue,
-      concessionFee: this.state.concessionFeeFieldValue,
+      busFee: this.state.busFeeFieldValue || 0,
+      hostelFee: this.state.hostelFeeFieldValue || 0,
+      admissionFee: this.state.admissionFeeFieldValue || 0,
+      labFee: this.state.labFeeFieldValue || 0,
+      miscellanousFee: this.state.miscellanousFeeFieldValue || 0,
+      concessionFee: this.state.concessionFeeFieldValue || 0,
       totalFee: this.state.totalFeeFieldValue.toString()
     };
     if (this.state.value == "HOSTELLER") {
