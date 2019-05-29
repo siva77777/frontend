@@ -46,7 +46,7 @@ class App extends React.Component {
       <TopBar.UserMenu
         name={this.props.user}
         detail="Administrator"
-        initials="H"
+        initials={this.props.user[0]}
       />
     );
     const secondaryMenuMarkup = (
