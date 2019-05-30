@@ -516,7 +516,6 @@ class Students extends React.Component {
                       dataField: 'studentID',
                       order: 'asc'
                     }]}
-                    rowStyle={{border: "none"}}
                   />
                 </div>
               )
@@ -721,7 +720,7 @@ class Students extends React.Component {
         this.setState({ hallSelectValidationError: "Hall is required" })
       }
     }
-    if (firstNameInvalid || lastNameInvalid || emailInvalid || phoneNumberInvalid || classInvalid || branchInvalid || genderInvalid || categoryInvalid || (this.state.value === "DAY SCHOLAR" && busInvalid) || (this.state.value !== "DAY SCHOLAR" && hallInvalid)) {
+    if (firstNameInvalid || lastNameInvalid || phoneNumberInvalid || classInvalid || branchInvalid || genderInvalid || categoryInvalid || (this.state.value === "DAY SCHOLAR" && busInvalid) || (this.state.value !== "DAY SCHOLAR" && hallInvalid)) {
       return false;
     } else {
       return true;
