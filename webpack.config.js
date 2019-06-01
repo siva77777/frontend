@@ -20,8 +20,5 @@ module.exports = {
                 use: ['style-loader', 'css-loader']
             }
         ]
-    },
-    optimization: {
-        minimizer: [new UglifyJsPlugin()]
     }
 }

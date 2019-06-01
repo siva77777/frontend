@@ -37,9 +37,39 @@
 }
 
 .filter-label {
-  display: none
+  display: none;
 }
 
 .table-bordered td, .table-bordered th {
-  border: none
+  border: none;
+}
+
+.react-bootstrap-table th[data-row-selection] {
+  width: 10%;
+}
+
+.feeDetails .Polaris-Button {
+  width: 100%
+}
+
+.ruler { 
+  margin-left: 10px;
+  margin-right: 10px;
+  border-color: #979797;
+  border-style: dashed 
+}
+
+.rulerParent {
+  display: flex;
+  width: 100%;
+  padding: 8px;
+}
+
+.feeType {
+  width: 110px;
+}
+
+.fee {
+  width: 60px;
+  text-align: right;
 }
