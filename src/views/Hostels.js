@@ -37,22 +37,49 @@ class Hostels extends React.Component {
     this.fetchData();
   }
 
+  componentWillReceiveProps(props) {
+    this.props = props;
+    this.fetchData();
+  }
+
   fetchData() {
-    Axios({
-      method: "get",
-      url: "http://www.srmheavens.com/erp/hostel/",
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': this.props.token
+    if (this.props.branch == "") {
+      Axios({
+        method: "get",
+        url: "http://www.srmheavens.com/erp/hostel/",
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': this.props.token
+        }
+      }).then(response => response.data).then(data => {
+        var tableData = data;
+        var rows = [];
+        for (var i = 0; i < tableData.length; i++) {
+          rows.push({ hallName: tableData[i].hallName, hallCapacity: tableData[i].hallCapacity, hallWarden: tableData[i].hallWarden, wardenPhoneNumber: tableData[i].wardenPhone, remarks: tableData[i].hallRemarks, branch: tableData[i].branch });
+        }
+        this.setState({ rows: rows, isLoaded: true });
+      });
+    } else {
+      var data = {
+        branch: this.props.branch
       }
-    }).then(response => response.data).then(data => {
-      var tableData = data;
-      var rows = [];
-      for (var i = 0; i < tableData.length; i++) {
-        rows.push({ hallName: tableData[i].Hi_hallName, hallCapacity: tableData[i].Hi_hallCapacity, hallWarden: tableData[i].Hi_hallWarden, wardenPhoneNumber: tableData[i].Hi_hallWardenPhone, remarks: tableData[i].Hi_hallRemarks });
-      }
-      this.setState({ rows: rows, isLoaded: true });
-    });
+      Axios({
+        method: "post",
+        url: "http://www.srmheavens.com/erp/hostel/bhostel",
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': this.props.token
+        },
+        data: data
+      }).then(response => response.data).then(data => {
+        var tableData = data;
+        var rows = [];
+        for (var i = 0; i < tableData.length; i++) {
+          rows.push({ hallName: tableData[i].hallName, hallCapacity: tableData[i].hallCapacity, hallWarden: tableData[i].hallWarden, wardenPhoneNumber: tableData[i].wardenPhone, remarks: tableData[i].hallRemarks, branch: tableData[i].branch });
+        }
+        this.setState({ rows: rows, isLoaded: true });
+      });
+    }
     Axios({
       method: "get",
       url: "http://www.srmheavens.com/erp/branch/",
@@ -157,6 +184,10 @@ class Hostels extends React.Component {
       dataField: 'remarks',
       text: 'Remarks',
       sort: true
+    }, {
+      dataField: 'branch',
+      text: 'Branch',
+      sort: true
     }
     ];
 
@@ -179,7 +210,7 @@ class Hostels extends React.Component {
                     {...props.baseProps}
                     pagination={paginationFactory()}
                     bootstrap4
-                    defaultSorted = {[{
+                    defaultSorted={[{
                       dataField: 'hallName',
                       order: 'asc'
                     }]}

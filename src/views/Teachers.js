@@ -34,22 +34,49 @@ class Teachers extends React.Component {
     this.fetchData();
   }
 
+  componentWillReceiveProps(props) {
+    this.props = props;
+    this.fetchData();
+  }
+
   fetchData() {
-    Axios({
-      method: "get",
-      url: "http://www.srmheavens.com/erp/teacher/",
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': this.props.token
+    if (this.props.branch == "") {
+      Axios({
+        method: "get",
+        url: "http://www.srmheavens.com/erp/teacher/",
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': this.props.token
+        }
+      }).then(response => response.data).then(data => {
+        var tableData = data;
+        var rows = [];
+        for (var i = 0; i < tableData.length; i++) {
+          rows.push({ teacherID: tableData[i].teacherID, teacherName: tableData[i].teacherName, teacherPhoneNumber: tableData[i].teacherPhone, teacherSpecialization: tableData[i].tSpecialization, branch: tableData[i].branch });
+        }
+        this.setState({ rows: rows, isLoaded: true });
+      });
+    } else {
+      var data = {
+        branch: this.props.branch
       }
-    }).then(response => response.data).then(data => {
-      var tableData = data;
-      var rows = [];
-      for (var i = 0; i < tableData.length; i++) {
-        rows.push({ teacherName: tableData[i].Ti_teacherName, teacherPhoneNumber: tableData[i].Ti_teacherPhoneNumber, teacherSpecialization: tableData[i].Ti_teacherSpecialization });
-      }
-      this.setState({ rows: rows, isLoaded: true });
-    });
+      Axios({
+        method: "post",
+        url: "http://www.srmheavens.com/erp/teacher/bteacher",
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': this.props.token
+        },
+        data: data
+      }).then(response => response.data).then(data => {
+        var tableData = data;
+        var rows = [];
+        for (var i = 0; i < tableData.length; i++) {
+          rows.push({ teacherID: tableData[i].teacherID, teacherName: tableData[i].teacherName, teacherPhoneNumber: tableData[i].teacherPhone, teacherSpecialization: tableData[i].tSpecialization, branch: tableData[i].branch });
+        }
+        this.setState({ rows: rows, isLoaded: true });
+      });
+    }
     Axios({
       method: "get",
       url: "http://www.srmheavens.com/erp/branch/",
@@ -120,6 +147,11 @@ class Teachers extends React.Component {
     const { SearchBar } = Search;
 
     const columns = [{
+      dataField: 'teacherID',
+      text: 'Teacher ID',
+      sort: true
+    },
+    {
       dataField: 'teacherName',
       text: 'Teacher Name',
       sort: true
@@ -130,6 +162,10 @@ class Teachers extends React.Component {
     }, {
       dataField: 'teacherSpecialization',
       text: 'Specialization',
+      sort: true
+    }, {
+      dataField: 'branch',
+      text: 'Branch',
       sort: true
     }
     ];
@@ -153,8 +189,8 @@ class Teachers extends React.Component {
                     {...props.baseProps}
                     pagination={paginationFactory()}
                     bootstrap4
-                    defaultSorted = {[{
-                      dataField: 'teacherName',
+                    defaultSorted={[{
+                      dataField: 'teacherID',
                       order: 'asc'
                     }]}
                   />

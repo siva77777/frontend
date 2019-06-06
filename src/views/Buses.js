@@ -39,22 +39,49 @@ class Buses extends React.Component {
     this.fetchData();
   }
 
+  componentWillReceiveProps(props) {
+    this.props = props;
+    this.fetchData();
+  }
+
   fetchData() {
-    Axios({
-      method: "get",
-      url: "http://www.srmheavens.com/erp/bus/",
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': this.props.token
+    if (this.props.branch == "") {
+      Axios({
+        method: "get",
+        url: "http://www.srmheavens.com/erp/bus/",
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': this.props.token
+        }
+      }).then(response => response.data).then(data => {
+        var tableData = data;
+        var rows = [];
+        for (var i = 0; i < tableData.length; i++) {
+          rows.push({ busName: tableData[i].busName, capacity: tableData[i].busCapacity, busRoute: tableData[i].busRoute, driver: tableData[i].driverName, phone: tableData[i].driverPhone, branch: tableData[i].branch });
+        }
+        this.setState({ rows: rows, isLoaded: true });
+      });
+    } else {
+      var data = {
+        branch: this.props.branch
       }
-    }).then(response => response.data).then(data => {
-      var tableData = data;
-      var rows = [];
-      for (var i = 0; i < tableData.length; i++) {
-        rows.push({ busName: tableData[i].Bi_busName, route: tableData[i].Bi_busRoute, capacity: tableData[i].Bi_busCapacity, driver: tableData[i].Bi_busDriverName, phone: tableData[i].Bi_driverPhone });
-      }
-      this.setState({ rows: rows, isLoaded: true });
-    });
+      Axios({
+        method: "post",
+        url: "http://www.srmheavens.com/erp/bus/bbus",
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': this.props.token
+        },
+        data: data
+      }).then(response => response.data).then(data => {
+        var tableData = data;
+        var rows = [];
+        for (var i = 0; i < tableData.length; i++) {
+          rows.push({ busName: tableData[i].busName, capacity: tableData[i].busCapacity, busRoute: tableData[i].busRoute, driver: tableData[i].driverName, phone: tableData[i].driverPhone, branch: tableData[i].branch });
+        }
+        this.setState({ rows: rows, isLoaded: true });
+      });
+    }
     Axios({
       method: "get",
       url: "http://www.srmheavens.com/erp/branch/",
@@ -145,12 +172,12 @@ class Buses extends React.Component {
       text: 'Bus Name',
       sort: true
     }, {
-      dataField: 'route',
-      text: 'Route',
-      sort: true
-    }, {
       dataField: 'capacity',
       text: 'Capacity',
+      sort: true
+    }, {
+      dataField: 'busRoute',
+      text: 'Bus Route',
       sort: true
     }, {
       dataField: 'driver',
@@ -159,6 +186,10 @@ class Buses extends React.Component {
     }, {
       dataField: 'phone',
       text: 'Phone',
+      sort: true
+    }, {
+      dataField: 'branch',
+      text: 'Branch',
       sort: true
     }
     ];
@@ -182,7 +213,7 @@ class Buses extends React.Component {
                     {...props.baseProps}
                     pagination={paginationFactory()}
                     bootstrap4
-                    defaultSorted = {[{
+                    defaultSorted={[{
                       dataField: 'busName',
                       order: 'asc'
                     }]}
