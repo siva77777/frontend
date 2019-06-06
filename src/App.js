@@ -7,6 +7,7 @@ import Hostels from './views/Hostels';
 import Standards from './views/Standards';
 import Subjects from './views/Subjects';
 import Teachers from './views/Teachers';
+import Guardians from './views/Guardians';
 import FeesCollection from './views/FeesCollection';
 import Axios from 'axios';
 
@@ -93,7 +94,8 @@ class App extends React.Component {
             },
             {
               label: 'Guardians',
-              icon: 'orders'
+              icon: 'orders',
+              onClick: () => this.props.history.push('/guardians')
             },
             {
               label: 'Standards',
@@ -161,6 +163,7 @@ class App extends React.Component {
             <Route path="/subjects" render={() => <Subjects token={this.props.token} branch={this.state.selectedBranch} />} />
             <Route path="/teachers" render={() => <Teachers token={this.props.token} branch={this.state.selectedBranch} />} />
             <Route path="/feesCollection" render={() => <FeesCollection token={this.props.token} branch={this.state.selectedBranch} />} />
+            <Route path="/guardians" render={() => <Guardians token={this.props.token} branch={this.state.selectedBranch} />} />
           </Frame>
         </AppProvider>
       </div>
