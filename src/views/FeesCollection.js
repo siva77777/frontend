@@ -44,37 +44,85 @@ class FeesCollection extends React.Component {
     this.fetchData();
   }
 
+  componentWillReceiveProps(props) {
+    this.props = props;
+    this.fetchData();
+    this.handleStandardChange("");
+  }
 
   fetchData() {
-    Axios({
-      method: "get",
-      url: "http://www.srmheavens.com/erp/fph/",
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': this.props.token
+    if (this.props.branch == "") {
+      Axios({
+        method: "get",
+        url: "http://www.srmheavens.com/erp/fph/",
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': this.props.token
+        }
+      }).then(response => response.data).then(data => {
+        var tableData = data;
+        var rows = [];
+        for (var i = 0; i < tableData.length; i++) {
+          rows.push({ name: tableData[i].fName + " " + tableData[i].lName, class: tableData[i].std, studentID: tableData[i].studentID, totalFee: tableData[i].totalFee, totalPaid: tableData[i].TotalPaid || 0, due: tableData[i].totalFee - tableData[i].TotalPaid || 0 });
+        }
+        this.setState({ rows: rows, isLoaded: true });
+      });
+    } else {
+      var data = {
+        branch: this.props.branch
       }
-    }).then(response => response.data).then(data => {
-      var tableData = data;
-      var rows = [];
-      for (var i = 0; i < tableData.length; i++) {
-        rows.push({ name: tableData[i].fName + " " + tableData[i].lName, class: tableData[i].std, studentID: tableData[i].studentID, totalFee: tableData[i].totalFee, totalPaid: tableData[i].TotalPaid || 0, due: tableData[i].totalFee - tableData[i].TotalPaid || 0 });
+      Axios({
+        method: "post",
+        url: "http://www.srmheavens.com/erp/fph/bfee/",
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': this.props.token
+        },
+        data: data
+      }).then(response => response.data).then(data => {
+        var tableData = data;
+        var rows = [];
+        for (var i = 0; i < tableData.length; i++) {
+          rows.push({ name: tableData[i].fName + " " + tableData[i].lName, class: tableData[i].std, studentID: tableData[i].studentID, totalFee: tableData[i].totalFee, totalPaid: tableData[i].TotalPaid || 0, due: tableData[i].totalFee - tableData[i].TotalPaid || 0 });
+        }
+        this.setState({ rows: rows, isLoaded: true });
+      });
+    }
+    if (this.props.branch == "") {
+      Axios({
+        method: "get",
+        url: "http://www.srmheavens.com/erp/class/",
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': this.props.token
+        }
+      }).then(response => response.data).then(data => {
+        var options = [{ label: "All", value: "" }];
+        for (var i = 0; i < data.length; i++) {
+          options.push({ label: data[i].class, value: data[i].class });
+        }
+        this.setState({ standardOptions: options, standardLoaded: true });
+      });
+    } else {
+      var data = {
+        branch: this.props.branch
       }
-      this.setState({ rows: rows, isLoaded: true });
-    });
-    Axios({
-      method: "get",
-      url: "http://www.srmheavens.com/erp/class/",
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': this.props.token
-      }
-    }).then(response => response.data).then(data => {
-      var options = [{ label: "All", value: "" }];
-      for (var i = 0; i < data.length; i++) {
-        options.push({ label: data[i].Ci_classStandard, value: data[i].Ci_classStandard });
-      }
-      this.setState({ standardOptions: options, standardLoaded: true });
-    });
+      Axios({
+        method: "post",
+        url: "http://www.srmheavens.com/erp/class/bclass/",
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': this.props.token
+        },
+        data: data
+      }).then(response => response.data).then(data => {
+        var options = [{ label: "All", value: "" }];
+        for (var i = 0; i < data.length; i++) {
+          options.push({ label: data[i].class, value: data[i].class });
+        }
+        this.setState({ standardOptions: options, standardLoaded: true });
+      });
+    }
   }
 
   render() {

@@ -84,22 +84,50 @@ class Students extends React.Component {
     this.fetchData();
   }
 
+  componentWillReceiveProps(props) {
+    this.props = props;
+    this.fetchData();
+  }
+
+
   fetchData() {
-    Axios({
-      method: "get",
-      url: "http://www.srmheavens.com/erp/admission/students/",
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': this.props.token
+    if (this.props.branch === "") {
+      Axios({
+        method: "get",
+        url: "http://www.srmheavens.com/erp/admission/students/",
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': this.props.token
+        },
+      }).then(response => response.data).then(data => {
+        var tableData = data;
+        var rows = [];
+        for (var i = 0; i < tableData.length; i++) {
+          rows.push({ studentID: tableData[i].Si_studentID, name: tableData[i].Si_firstName + " " + tableData[i].Si_lastName, class: tableData[i].Ci_classStandard, parent: tableData[i].Pi_fatherFirstName + " " + tableData[i].Pi_fatherLastName, phone: tableData[i].Pi_parentPhone, residentDetails: tableData[i].Si_residentDetails });
+        }
+        this.setState({ rows: rows, isLoaded: true });
+      });
+    } else {
+      var data = {
+        branch: this.props.branch
       }
-    }).then(response => response.data).then(data => {
-      var tableData = data;
-      var rows = [];
-      for (var i = 0; i < tableData.length; i++) {
-        rows.push({ studentID: tableData[i].Si_studentID, name: tableData[i].Si_firstName + " " + tableData[i].Si_lastName, class: tableData[i].Ci_classStandard, parent: tableData[i].Pi_fatherFirstName + " " + tableData[i].Pi_fatherLastName, phone: tableData[i].Pi_parentPhone, residentDetails: tableData[i].Si_residentDetails });
-      }
-      this.setState({ rows: rows, isLoaded: true });
-    });
+      Axios({
+        method: "post",
+        url: "http://www.srmheavens.com/erp/admission/bstudents/",
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': this.props.token
+        },
+        data: data
+      }).then(response => response.data).then(data => {
+        var tableData = data;
+        var rows = [];
+        for (var i = 0; i < tableData.length; i++) {
+          rows.push({ studentID: tableData[i].Si_studentID, name: tableData[i].Si_firstName + " " + tableData[i].Si_lastName, class: tableData[i].Ci_classStandard, parent: tableData[i].Pi_fatherFirstName + " " + tableData[i].Pi_fatherLastName, phone: tableData[i].Pi_parentPhone, residentDetails: tableData[i].Si_residentDetails });
+        }
+        this.setState({ rows: rows, isLoaded: true });
+      });
+    }
     Axios({
       method: "get",
       url: "http://www.srmheavens.com/erp/class/",
@@ -110,7 +138,7 @@ class Students extends React.Component {
     }).then(response => response.data).then(data => {
       var options = [];
       for (var i = 0; i < data.length; i++) {
-        options.push({ label: data[i].Ci_classStandard, value: data[i].Ci_classStandard });
+        options.push({ label: data[i].class, value: data[i].class });
       }
       this.setState({ classOptions: options });
     });
@@ -215,20 +243,20 @@ class Students extends React.Component {
               </FormLayout.Group>
               <FormLayout.Group>
                 <Select
-                  label="Class"
-                  options={this.state.classOptions}
-                  onChange={this.handleClassChange}
-                  value={this.state.selectedClass}
-                  placeholder="Select Class"
-                  error={this.state.classSelectValidationError}
-                />
-                <Select
                   label="Branch"
                   options={this.state.branchOptions}
                   onChange={this.handleBranchChange}
                   value={this.state.selectedBranch}
                   placeholder="Select Branch"
                   error={this.state.branchSelectValidationError}
+                />
+                <Select
+                  label="Class"
+                  options={this.state.classOptions}
+                  onChange={this.handleClassChange}
+                  value={this.state.selectedClass}
+                  placeholder="Select Class"
+                  error={this.state.classSelectValidationError}
                 />
               </FormLayout.Group>
               <TextField
@@ -512,7 +540,7 @@ class Students extends React.Component {
                     {...props.baseProps}
                     pagination={paginationFactory()}
                     bootstrap4
-                    defaultSorted = {[{
+                    defaultSorted={[{
                       dataField: 'studentID',
                       order: 'asc'
                     }]}
@@ -649,11 +677,32 @@ class Students extends React.Component {
   }
 
   handleClassChange = (newValue) => {
-    this.setState({ selectedClass: newValue, classSelectValidationError: "" });
+    if (this.state.selectedBranch == "") {
+      this.setState({ classSelectValidationError: "Select branch first" })
+    } else {
+      this.setState({ selectedClass: newValue, classSelectValidationError: "" });
+    }
   };
 
   handleBranchChange = (newValue) => {
-    this.setState({ selectedBranch: newValue, branchSelectValidationError: "" });
+    var data = {
+      branch: newValue
+    }
+    Axios({
+      method: "post",
+      url: "http://www.srmheavens.com/erp/class/bclass/",
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': this.props.token
+      },
+      data: data
+    }).then(response => response.data).then(data => {
+      var options = [];
+      for (var i = 0; i < data.length; i++) {
+        options.push({ label: data[i].class, value: data[i].class });
+      }
+      this.setState({ classOptions: options, selectedBranch: newValue, branchSelectValidationError: "", classSelectValidationError: "" });
+    });
   };
 
   handleGenderChange = (newValue) => {

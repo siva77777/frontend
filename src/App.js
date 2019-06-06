@@ -19,7 +19,8 @@ class App extends React.Component {
       isLoading: false,
       token: "",
       showMobileNavigation: false,
-      branchOptions: []
+      branchOptions: [],
+      selectedBranch: ""
     }
   }
 
@@ -32,7 +33,7 @@ class App extends React.Component {
         'x-access-token': this.props.token
       }
     }).then(response => response.data).then(data => {
-      var options = [];
+      var options = [{ label: "Select Branch", value: "" }];
       for (var i = 0; i < data.length; i++) {
         options.push({ label: data[i].SBi_branchName, value: data[i].SBi_branchName });
       }
@@ -57,7 +58,7 @@ class App extends React.Component {
               options={this.state.branchOptions}
               onChange={this.handleBranchChange}
               value={this.state.selectedBranch}
-              placeholder="Select Branch" />
+            />
           </div>
         }
       />
@@ -153,13 +154,13 @@ class App extends React.Component {
             showMobileNavigation={this.state.showMobileNavigation}
             onNavigationDismiss={this.hideMobileNavigation}
           >
-            <Route path="/students" render={() => <Students token={this.props.token} />} />
-            <Route path="/buses" render={() => <Buses token={this.props.token} />} />
-            <Route path="/hostels" render={() => <Hostels token={this.props.token} />} />
-            <Route path="/standards" render={() => <Standards token={this.props.token} />} />
-            <Route path="/subjects" render={() => <Subjects token={this.props.token} />} />
-            <Route path="/teachers" render={() => <Teachers token={this.props.token} />} />
-            <Route path="/feesCollection" render={() => <FeesCollection token={this.props.token} />} />
+            <Route path="/students" render={() => <Students token={this.props.token} branch={this.state.selectedBranch} />} />
+            <Route path="/buses" render={() => <Buses token={this.props.token} branch={this.state.selectedBranch} />} />
+            <Route path="/hostels" render={() => <Hostels token={this.props.token} branch={this.state.selectedBranch} />} />
+            <Route path="/standards" render={() => <Standards token={this.props.token} branch={this.state.selectedBranch} />} />
+            <Route path="/subjects" render={() => <Subjects token={this.props.token} branch={this.state.selectedBranch} />} />
+            <Route path="/teachers" render={() => <Teachers token={this.props.token} branch={this.state.selectedBranch} />} />
+            <Route path="/feesCollection" render={() => <FeesCollection token={this.props.token} branch={this.state.selectedBranch} />} />
           </Frame>
         </AppProvider>
       </div>

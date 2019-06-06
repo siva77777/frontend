@@ -32,22 +32,49 @@ class Standards extends React.Component {
     this.fetchData();
   }
 
+  componentWillReceiveProps(props) {
+    this.props = props;
+    this.fetchData();
+  }
+
   fetchData() {
-    Axios({
-      method: "get",
-      url: "http://www.srmheavens.com/erp/class/",
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': this.props.token
+    if (this.props.branch == "") {
+      Axios({
+        method: "get",
+        url: "http://www.srmheavens.com/erp/class/",
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': this.props.token
+        }
+      }).then(response => response.data).then(data => {
+        var tableData = data;
+        var rows = [];
+        for (var i = 0; i < tableData.length; i++) {
+          rows.push({ standard: tableData[i].class, capacity: tableData[i].classCapacity, branch: tableData[i].branch });
+        }
+        this.setState({ rows: rows, isLoaded: true });
+      });
+    } else {
+      var data = {
+        branch: this.props.branch
       }
-    }).then(response => response.data).then(data => {
-      var tableData = data;
-      var rows = [];
-      for (var i = 0; i < tableData.length; i++) {
-        rows.push({ standard: tableData[i].Ci_classStandard, capacity: tableData[i].Ci_classCapacity });
-      }
-      this.setState({ rows: rows, isLoaded: true });
-    });
+      Axios({
+        method: "post",
+        url: "http://www.srmheavens.com/erp/class/bclass/",
+        headers: {
+          'Content-Type': 'application/json',
+          'x-access-token': this.props.token
+        },
+        data: data
+      }).then(response => response.data).then(data => {
+        var tableData = data;
+        var rows = [];
+        for (var i = 0; i < tableData.length; i++) {
+          rows.push({ standard: tableData[i].class, capacity: tableData[i].classCapacity, branch: tableData[i].branch });
+        }
+        this.setState({ rows: rows, isLoaded: true });
+      });
+    }
     Axios({
       method: "get",
       url: "http://www.srmheavens.com/erp/branch/",
@@ -116,6 +143,10 @@ class Standards extends React.Component {
       dataField: 'capacity',
       text: 'Capacity',
       sort: true
+    }, {
+      dataField: 'branch',
+      text: 'Branch',
+      sort: true
     }
     ];
 
@@ -138,7 +169,7 @@ class Standards extends React.Component {
                     {...props.baseProps}
                     pagination={paginationFactory()}
                     bootstrap4
-                    defaultSorted = {[{
+                    defaultSorted={[{
                       dataField: 'standard',
                       order: 'asc'
                     }]}
