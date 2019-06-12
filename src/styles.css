@@ -73,3 +73,24 @@
   width: 60px;
   text-align: right;
 }
+
+.headingProfile {
+  color: #637381;
+  font-size: 12px;
+}
+
+.contentProfile {
+  color: #212b36;
+  font-size: 15px;
+}
+
+.Polaris-Layout__Section {
+  margin-left: 0% !important;
+}
+
+.studentHeadingProfile {
+  font-weight: 600;
+  color: #637381;
+  margin-bottom: 3%;
+  font-size: 17px;
+}

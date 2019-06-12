@@ -39,7 +39,6 @@ class Guardians extends React.Component {
         );
     }
     show = (cell, row) => {
-        console.log(cell, row);
         this.props.history.push({
             pathname: '/studentProfile',
             state: { parentPhone: row.phone }
@@ -93,13 +92,13 @@ class Guardians extends React.Component {
         const { SearchBar } = Search;
 
         const columns = [{
-            dataField: 'student',
-            text: 'Student',
-            sort: true
-        }, {
             dataField: 'father',
             text: 'Father',
             formatter: this.renderButtons,
+            sort: true
+        }, {
+            dataField: 'student',
+            text: 'Student',
             sort: true
         }, {
             dataField: 'place',
