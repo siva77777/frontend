@@ -8,6 +8,8 @@ import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.c
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css'
 import Axios from 'axios';
+import { Route } from "react-router-dom";
+import Hostels from './Hostels';
 
 
 class Guardians extends React.Component {
@@ -17,6 +19,7 @@ class Guardians extends React.Component {
             rows: [],
             isLoaded: false
         };
+        this.renderButtons = this.renderButtons.bind(this);
     }
 
     componentDidMount() {
@@ -26,6 +29,21 @@ class Guardians extends React.Component {
     componentWillReceiveProps(props) {
         this.props = props;
         this.fetchData();
+    }
+
+    renderButtons(cell, row) {
+        return (
+            <a style={{ color: "#5c6ac4", cursor: "pointer" }} onClick={this.show.bind(this, cell, row)}>
+                {cell}
+            </a>
+        );
+    }
+    show = (cell, row) => {
+        console.log(cell, row);
+        this.props.history.push({
+            pathname: '/studentProfile',
+            state: { parentPhone: row.phone }
+        })
     }
 
     fetchData() {
@@ -81,6 +99,7 @@ class Guardians extends React.Component {
         }, {
             dataField: 'father',
             text: 'Father',
+            formatter: this.renderButtons,
             sort: true
         }, {
             dataField: 'place',
