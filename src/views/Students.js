@@ -152,7 +152,7 @@ class Students extends React.Component {
     }).then(response => response.data).then(data => {
       var options = [];
       for (var i = 0; i < data.length; i++) {
-        options.push({ label: data[i].Bi_busName, value: data[i].Bi_busName });
+        options.push({ label: data[i].busName, value: data[i].busName });
       }
       this.setState({ busNameOptions: options });
     });
@@ -166,7 +166,7 @@ class Students extends React.Component {
     }).then(response => response.data).then(data => {
       var options = [];
       for (var i = 0; i < data.length; i++) {
-        options.push({ label: data[i].Hi_hallName, value: data[i].Hi_hallName });
+        options.push({ label: data[i].hallName, value: data[i].hallName });
       }
       this.setState({ hallOptions: options });
     });
