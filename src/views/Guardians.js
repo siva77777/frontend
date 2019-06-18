@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Page } from '@shopify/polaris';
+import { Page } from '@shopify/polaris';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -8,9 +8,6 @@ import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.c
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles.css'
 import Axios from 'axios';
-import { Route } from "react-router-dom";
-import Hostels from './Hostels';
-
 
 class Guardians extends React.Component {
     constructor(props) {

@@ -10,6 +10,7 @@ import Teachers from './views/Teachers';
 import Guardians from './views/Guardians';
 import FeesCollection from './views/FeesCollection';
 import StudentProfile from './views/StudentProfile';
+import Complaints from './views/Complaints';
 import Axios from 'axios';
 
 class App extends React.Component {
@@ -135,6 +136,11 @@ class App extends React.Component {
               label: 'Staff',
               icon: 'orders'
             },
+            {
+              label: 'Complaints',
+              icon: 'orders',
+              onClick: () => this.props.history.push('/complaints')
+            }
           ]}
         />
       </Navigation>
@@ -166,6 +172,7 @@ class App extends React.Component {
             <Route path="/feesCollection" render={() => <FeesCollection token={this.props.token} branch={this.state.selectedBranch} />} />
             <Route path="/guardians" render={() => <Guardians token={this.props.token} branch={this.state.selectedBranch} history={this.props.history}/>} />
             <Route path="/studentProfile" render={() => <StudentProfile token={this.props.token} history={this.props.history}/>} />
+            <Route path="/complaints" render={() => <Complaints token={this.props.token} branch={this.state.selectedBranch} />} />
           </Frame>
         </AppProvider>
       </div>

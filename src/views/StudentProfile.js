@@ -5,9 +5,9 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import ToolkitProvider from 'react-bootstrap-table2-toolkit';
+import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import '../styles.css';
-import { Card, Page, Select, Tabs, Layout } from '@shopify/polaris';
+import { Button, Card, Layout, FormLayout, Modal, Page, Select, Tabs, TextField } from '@shopify/polaris';
 import Async from "react-async";
 
 
@@ -24,8 +24,11 @@ class StudentProfile extends React.Component {
             selectedChild: "",
             selectedTerm: "",
             isLoaded: false,
+            complaintDataLoaded: false,
             studentID: "",
             showFeeHistory: false,
+            complaintFieldValue: "",
+            showComplaintsModal: false,
             termOptions: [{ label: "Select Term", value: "" }, { label: "Term 1", value: "Term1" }, { label: "Term 2", value: "Term2" }, { label: "Term 3", value: "Term3" },],
             studentIDProfile: "",
             standardProfile: "",
@@ -43,6 +46,34 @@ class StudentProfile extends React.Component {
 
     componentDidMount() {
         this.fetchData();
+    }
+
+    fetchComplaintData() {
+        var data = {
+            sID: this.state.selectedChild
+        }
+        Axios({
+            method: "post",
+            url: "http://www.srmheavens.com/erp/complaint/student",
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': this.props.token
+            },
+            data: data
+        }).then(response => response.data).then(data => {
+            var tableData = data;
+            var rows = [];
+            for (var i = 0; i < tableData.length; i++) {
+                var date = tableData[i].raisedOn
+                date = new Date(date);
+                const year = date.getFullYear();
+                const month = `${date.getMonth() + 1}`.padStart(2, 0);
+                const dt = `${date.getDate()}`.padStart(2, 0);
+                const stringDate = [year, month, dt].join("-");
+                rows.push({ complaintRaised: tableData[i].complaintRaised, date: stringDate });
+            }
+            this.setState({ rows: rows, complaintDataLoaded: true });
+        });
     }
 
 
@@ -68,7 +99,8 @@ class StudentProfile extends React.Component {
                     options.push({ label: data[i].Si_firstName + " " + data[i].Si_lastName, value: data[i].Si_studentID });
                 }
                 this.setState({ childOptions: options, selectedChild: options[0].value, isLoaded: true }, () => {
-                    this.fetchStudentProfile(options[0].value)
+                    this.fetchStudentProfile(options[0].value);
+                    this.fetchComplaintData();
                 });
             })
             .catch(error => console.error('Error:', error));
@@ -115,6 +147,11 @@ class StudentProfile extends React.Component {
                 id: 'performance',
                 content: 'Performance',
                 panelID: 'performance-content',
+            },
+            {
+                id: 'complaints',
+                content: 'Complaints',
+                panelID: 'performance-complaints',
             },
         ];
         if (this.state.selected == 4) {
@@ -233,10 +270,95 @@ class StudentProfile extends React.Component {
                     {this.state.showFeeHistory ? feeHistoryComponent : null}
                 </div>
             )
+        } else if (this.state.selected == 8) {
+            var modalMarkup;
+            modalMarkup = (
+                <Modal
+                    open={this.state.showComplaintsModal}
+                    onClose={this.handleShowComplaintsModalClose}
+                    title="Complaint"
+                    primaryAction={{
+                        content: 'Submit',
+                        onAction: this.showComplaintSubmitMessage,
+                    }}
+                >
+                    <Modal.Section>
+                        <FormLayout>
+                            <TextField
+                                label="Student ID"
+                                value={this.state.selectedChild}
+                                type="text"
+                                readOnly
+                            />
+                            <TextField
+                                label="Complaint"
+                                value={this.state.complaintFieldValue}
+                                onChange={this.handleComplaintFieldChange}
+                                type="text"
+                                maxLength={200}
+                                showCharacterCount
+                                multiline
+                            />
+                        </FormLayout>
+                    </Modal.Section>
+                </Modal>
+            );
+
+
+            const { SearchBar } = Search;
+
+
+            const columns = [{
+                dataField: 'complaintRaised',
+                text: 'Complaint',
+                sort: true,
+                headerStyle: (colum, colIndex) => {
+                    return { width: "65%" };
+                  }
+            }, {
+                dataField: 'date',
+                text: 'Date',
+                sort: true,
+                headerStyle: (colum, colIndex) => {
+                    return { width: "35%" };
+                  }
+            }
+            ];
+            var abc = (
+                <Page>
+                    {modalMarkup}
+                    <div style={{ marginBottom: "1%", float: "right" }}><Button primary onClick={this.showComplaintsModal}>Raise Complaint</Button></div>
+                    <ToolkitProvider
+                        keyField="id"
+                        data={this.state.rows}
+                        columns={columns}
+                        search
+                    >
+                        {
+                            props => {
+                                return (
+                                    <div>
+                                        <SearchBar {...props.searchProps} style={{ height: "34px", padding: "6px 12px" }} placeholder="Search Units" />
+                                        <BootstrapTable
+                                            {...props.baseProps}
+                                            pagination={paginationFactory()}
+                                            bootstrap4
+                                            defaultSorted={[{
+                                                dataField: 'studentID',
+                                                order: 'asc'
+                                            }]}
+                                        />
+                                    </div>
+                                )
+                            }
+                        }
+                    </ToolkitProvider>
+                </Page>
+            );
         } else {
             var abc = (<div>In progress</div>);
         }
-        if (this.state.isLoaded) {
+        if (this.state.isLoaded && this.state.complaintDataLoaded) {
             return (
                 <div style={{ marginTop: 20, marginLeft: 10 }}>
                     <div style={{ width: "200px", marginBottom: 11 }}>
@@ -268,12 +390,48 @@ class StudentProfile extends React.Component {
     handleChildChange = (newValue) => {
         this.setState({ selectedChild: newValue }, () => {
             this.resetFields();
-            this.fetchStudentProfile(newValue)
+            this.fetchStudentProfile(newValue);
+            this.fetchComplaintData();
         });
+    }
+
+    showComplaintsModal = () => {
+        this.setState({ showComplaintsModal: true });
+    }
+
+    handleShowComplaintsModalClose = () => {
+        this.resetComplaintField();
+    };
+
+    resetComplaintField = () => {
+        this.setState({ showComplaintsModal: false, complaintFieldValue: "" });
     }
 
     resetFields = () => {
         this.setState({ showFeeHistory: false, selectedTerm: "" });
+    }
+
+    showComplaintSubmitMessage = () => {
+        var data = {
+            sID: this.state.selectedChild,
+            complaint: this.state.complaintFieldValue
+        };
+        this.resetComplaintField();
+        Axios({
+            method: "post",
+            url: "http://www.srmheavens.com/erp/complaint/",
+            headers: {
+                'Content-Type': 'application/json',
+                'x-access-token': this.props.token
+            },
+            data: data
+        }).then(response => response.data)
+            .then(response => {
+                console.log('Success:', JSON.stringify(response));
+                this.fetchComplaintData();
+                this.setState({ showBusesModal: false });
+            })
+            .catch(error => console.error('Error:', error));
     }
 
     fetchStudentProfile = (newValue) => {
@@ -442,6 +600,10 @@ class StudentProfile extends React.Component {
         }
         this.setState({ selectedTerm: newValue });
     }
+
+    handleComplaintFieldChange = (complaintFieldValue) => {
+        this.setState({ complaintFieldValue });
+    };
 
     showFeeDetails = ({ id }) => {
         var data = {
