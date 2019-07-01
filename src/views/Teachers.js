@@ -28,6 +28,7 @@ class Teachers extends React.Component {
       teacherSpecializationFieldValidationError: "",
       branchSelectValidationError: ""
     };
+    this.renderButtons = this.renderButtons.bind(this);
   }
 
   componentDidMount() {
@@ -37,6 +38,20 @@ class Teachers extends React.Component {
   componentWillReceiveProps(props) {
     this.props = props;
     this.fetchData();
+  }
+
+  renderButtons(cell, row) {
+    return (
+      <a style={{ color: "#5c6ac4", cursor: "pointer" }} onClick={this.show.bind(this, cell, row)}>
+        {cell}
+      </a>
+    );
+  }
+  show = (cell, row) => {
+    this.props.history.push({
+      pathname: '/teacherProfile',
+      state: { teacherID: row.teacherID }
+    })
   }
 
   fetchData() {
@@ -154,6 +169,7 @@ class Teachers extends React.Component {
     {
       dataField: 'teacherName',
       text: 'Teacher Name',
+      formatter: this.renderButtons,
       sort: true
     }, {
       dataField: 'teacherPhoneNumber',

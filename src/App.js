@@ -10,6 +10,8 @@ import Teachers from './views/Teachers';
 import Guardians from './views/Guardians';
 import FeesCollection from './views/FeesCollection';
 import StudentProfile from './views/StudentProfile';
+import TeacherProfile from './views/TeacherProfile';
+import StandardProfile from './views/StandardProfile';
 import Complaints from './views/Complaints';
 import Axios from 'axios';
 
@@ -166,12 +168,14 @@ class App extends React.Component {
             <Route path="/students" render={() => <Students token={this.props.token} branch={this.state.selectedBranch} />} />
             <Route path="/buses" render={() => <Buses token={this.props.token} branch={this.state.selectedBranch} />} />
             <Route path="/hostels" render={() => <Hostels token={this.props.token} branch={this.state.selectedBranch} />} />
-            <Route path="/standards" render={() => <Standards token={this.props.token} branch={this.state.selectedBranch} />} />
+            <Route path="/standards" render={() => <Standards token={this.props.token} branch={this.state.selectedBranch} history={this.props.history} />} />
             <Route path="/subjects" render={() => <Subjects token={this.props.token} branch={this.state.selectedBranch} />} />
-            <Route path="/teachers" render={() => <Teachers token={this.props.token} branch={this.state.selectedBranch} />} />
+            <Route path="/teachers" render={() => <Teachers token={this.props.token} branch={this.state.selectedBranch} history={this.props.history} />} />
             <Route path="/feesCollection" render={() => <FeesCollection token={this.props.token} branch={this.state.selectedBranch} />} />
             <Route path="/guardians" render={() => <Guardians token={this.props.token} branch={this.state.selectedBranch} history={this.props.history}/>} />
             <Route path="/studentProfile" render={() => <StudentProfile token={this.props.token} history={this.props.history}/>} />
+            <Route path="/teacherProfile" render={() => <TeacherProfile token={this.props.token} history={this.props.history}/>} />
+            <Route path="/standardProfile" render={() => <StandardProfile token={this.props.token} branch={this.state.selectedBranch} history={this.props.history}/>} />
             <Route path="/complaints" render={() => <Complaints token={this.props.token} branch={this.state.selectedBranch} />} />
           </Frame>
         </AppProvider>

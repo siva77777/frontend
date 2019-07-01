@@ -26,6 +26,7 @@ class Standards extends React.Component {
       capacityFieldValidationError: "",
       branchSelectValidationError: ""
     };
+    this.renderButtons = this.renderButtons.bind(this);
   }
 
   componentDidMount() {
@@ -138,6 +139,7 @@ class Standards extends React.Component {
     const columns = [{
       dataField: 'standard',
       text: 'Standard',
+      formatter: this.renderButtons,
       sort: true
     }, {
       dataField: 'capacity',
@@ -207,6 +209,20 @@ class Standards extends React.Component {
   handleshowStandardsModalClose = () => {
     this.resetFields();
   };
+
+  renderButtons(cell, row) {
+    return (
+      <a style={{ color: "#5c6ac4", cursor: "pointer" }} onClick={this.show.bind(this, cell, row)}>
+        {cell}
+      </a>
+    );
+  }
+  show = (cell, row) => {
+    this.props.history.push({
+      pathname: '/standardProfile',
+      state: { standard: row.standard }
+    })
+  }
 
   validate = () => {
     if (validator.isEmpty(this.state.standardFieldValue, { ignore_whitespace: true })) {
