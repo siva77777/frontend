@@ -37,8 +37,7 @@ const TimeTable = (props) => {
   } 
 
     const tableDataMainStyle = {
-      // backgroundColor: `rgb(${props.color})`,
-      fontSize: '12px'
+      fontSize: '14px'
     }
       return (
         <p style={tableDataMainStyle} 
