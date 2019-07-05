@@ -38,7 +38,7 @@ const TimeTable = (props) => {
 
     const tableDataMainStyle = {
       // backgroundColor: `rgb(${props.color})`,
-      fontSize: '10px'
+      fontSize: '12px'
     }
       return (
         <p style={tableDataMainStyle} 
@@ -46,7 +46,9 @@ const TimeTable = (props) => {
           ${convertStartTime(props.startTime)} 
           ${convertEndTime(props.endTime)}`}
         >
-          {props.course} 
+        <span>
+          {props.course}
+        </span> 
         </p>
       )
 }

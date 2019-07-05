@@ -99,13 +99,13 @@ class StandardProfile extends React.Component {
                         <div>5:00PM</div>
                     </section>
                     <section className='titleWrapper'>
-                        <p className='timeColumn'>TIME</p>
-                        <p className='monday'>MON</p>
-                        <p className='tuesday'>TUE</p>
-                        <p className='wednesday'>WED</p>
-                        <p className='thursday'>THU</p>
-                        <p className='friday'>FRI</p>
-                        <p className='saturday'>SAT</p>
+                        <p className='timeColumn'><span>TIME</span></p>
+                        <p className='monday'><span>MON</span></p>
+                        <p className='tuesday'><span>TUE</span></p>
+                        <p className='wednesday'><span>WED</span></p>
+                        <p className='thursday'><span>THU</span></p>
+                        <p className='friday'><span>FRI</span></p>
+                        <p className='saturday'><span>SAT</span></p>
                     </section>
                     {this.state.timeTableData ? this.state.timeTableData.map(course =>
                         <TimeTable

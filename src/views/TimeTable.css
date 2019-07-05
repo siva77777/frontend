@@ -1,22 +1,27 @@
   .timetable {
     display: grid;
-    grid-template-columns: 100px repeat(6, 100px);
-    grid-template-rows: repeat(9, 50px);
+    grid-template-columns: 100px repeat(6, 142px);
+    grid-template-rows: repeat(9, 84px);
   }
   
   .titleWrapper {
     display: grid;
     grid-column: 1 / 8;
-    grid-template-columns: 100px repeat(6, 100px);
+    grid-template-columns: 100px repeat(6, 142px);
     margin-bottom: 10px;
-    border-bottom: 1px solid black;
-    justify-items: center;
   }
   
   .timeWrapper {
     display: grid;
     grid-row: 2 / 10;
-    grid-template-rows: repeat(9, 50px);
+    grid-template-rows: repeat(9, 84px);
+    margin-top: -10px;
+  }
+
+  .timeWrapper div {
+    text-align: center;
+    font-weight: 600;
+    color: #212b36;
   }
   
   p {
@@ -25,12 +30,44 @@
   }
   
   .tableElement {
-    border: 2px solid black;
     padding: 4px;
+    position: relative;
+    border-left: 1px solid #ffffff;
+    border-top: 1px solid #212b36;
   }
   
-  .tableElement:hover{
+  .tableElement:hover {
     cursor: pointer;
+  }
+
+  .tableElement span {
+    position: absolute;
+    width: fit-content;
+    height: fit-content;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    margin: auto;
+    color: #212b36;
+  }
+
+  .titleWrapper p {
+      position: relative;
+  }
+
+  .titleWrapper span {
+    position: absolute;
+    width: fit-content;
+    height: fit-content;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    margin: auto;
+    font-size: 13px;
+    font-weight: 600;
+    color: #212b36;
   }
   
   .timeWrapper div:nth-of-type(1) {
@@ -101,35 +138,43 @@
   /* start times */
   
   .nineOclock {
-    grid-row-start: 2; 
+    grid-row-start: 2;
+    background-color: #d1c4e9;
   }
   
   .tenOclock {
-    grid-row-start: 3; 
+    grid-row-start: 3;
+    background-color: #bbdefb;
   }
   
   .elevenOclock {
     grid-row-start: 4;
+    background-color: #b2ebf2;
   }
   
   .twelveOclock {
     grid-row-start: 5;
+    background-color: #c8e6c9;
   }
   
   .oneOclock {
     grid-row-start: 6;
+    background-color: #d1c4e9;
   }
   
   .twoOclock {
     grid-row-start: 7;
+    background-color: #bbdefb;
   }
   
   .threeOclock {
     grid-row-start: 8;
+    background-color: #b2ebf2;
   }
   
   .fourOclock {
     grid-row-start: 9;
+    background-color: #c8e6c9;
   }
   
   /* end times */
