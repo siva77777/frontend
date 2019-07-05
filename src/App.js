@@ -175,7 +175,7 @@ class App extends React.Component {
             <Route path="/guardians" render={() => <Guardians token={this.props.token} branch={this.state.selectedBranch} history={this.props.history}/>} />
             <Route path="/studentProfile" render={() => <StudentProfile token={this.props.token} history={this.props.history}/>} />
             <Route path="/teacherProfile" render={() => <TeacherProfile token={this.props.token} history={this.props.history}/>} />
-            <Route path="/standardProfile" render={() => <StandardProfile token={this.props.token} branch={this.state.selectedBranch} history={this.props.history}/>} />
+            <Route path="/standardProfile" render={() => <StandardProfile token={this.props.token} history={this.props.history}/>} />
             <Route path="/complaints" render={() => <Complaints token={this.props.token} branch={this.state.selectedBranch} />} />
           </Frame>
         </AppProvider>

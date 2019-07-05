@@ -140,7 +140,7 @@ class TeacherProfile extends React.Component {
                     title="Complaint"
                     primaryAction={{
                         content: 'Submit',
-                        onAction: this.showClassSubmitMessage,
+                        onAction: this.showSubmitMessage,
                     }}
                 >
                     <Modal.Section>
@@ -300,6 +300,32 @@ class TeacherProfile extends React.Component {
           this.setState({ classOptions: options, selectedBranch: newValue, classSelectValidationError: "" });
         });
       };
+
+      showSubmitMessage = () => {
+          var data = {
+            tID: this.props.history.location.state.teacherID,
+            branch: this.state.selectedBranch,
+            std: this.state.selectedClass,
+            subName: this.state.selectedSubject
+          };
+          this.resetClassesFields();
+    
+          Axios({
+            method: "post",
+            url: "http://www.srmheavens.com/erp/cas/",
+            headers: {
+              'Content-Type': 'application/json',
+              'x-access-token': this.props.token
+            },
+            data: data
+          }).then(response => response.data)
+            .then(response => {
+              console.log('Success:', JSON.stringify(response));
+              this.fetchData();
+              this.setState({ showClassesModal: false });
+            })
+            .catch(error => console.error('Error:', error));
+        }
 }
 
 export default TeacherProfile;

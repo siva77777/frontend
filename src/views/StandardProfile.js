@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import '../styles.css';
 import { Button, Card, Layout, FormLayout, Modal, Page, Select, Tabs, TextField } from '@shopify/polaris';
+import TimeTable from './TimeTable.jsx';
 
 
 class StandardProfile extends React.Component {
@@ -16,7 +17,8 @@ class StandardProfile extends React.Component {
         this.state = {
             selected: 2,
             isLoaded: false,
-            rows: []
+            rows: [],
+            timeTableData: []
         }
     }
 
@@ -31,7 +33,7 @@ class StandardProfile extends React.Component {
 
     fetchData() {
         var standard = this.props.history.location.state.standard;
-        var branch = this.props.branch;
+        var branch = this.props.history.location.state.branch;
         var data = {
             branch: branch,
             std: standard
@@ -45,9 +47,8 @@ class StandardProfile extends React.Component {
             },
             data: data
         }).then(response => response.data).then(data => {
-            var tableData = data;
-            var rows = [];
             console.log(data, "2222222");
+            this.setState({ timeTableData: data, isLoaded: true });
             // for (var i = 0; i < tableData.length; i++) {
             //     rows.push({ class: tableData[i].classSubject, strength: tableData[i].strength, branch: tableData[i].branch });
             // }
@@ -58,8 +59,13 @@ class StandardProfile extends React.Component {
     render() {
         const tabs = [
             {
-                id: 'schedule',
-                content: 'Schedule',
+                id: 'attendance',
+                content: 'Attendance',
+                panelID: 'attendance-content',
+            },
+            {
+                id: 'performance',
+                content: 'Performance',
                 panelID: 'schedule-content',
             },
             {
@@ -73,27 +79,48 @@ class StandardProfile extends React.Component {
                 panelID: 'classes-content',
             },
             {
-                id: 'attendance',
-                content: 'Attendance',
-                panelID: 'attendance-content',
+                id: 'exams',
+                content: 'Exams',
+                panelID: 'exams-content',
             },
-            {
-                id: 'holidays',
-                content: 'Holidays',
-                panelID: 'holidays-content',
-            },
-            {
-                id: 'leaves',
-                content: 'Leaves',
-                panelID: 'leaves-content',
-            }
         ];
-        if (this.state.selected == 2) {
-           
+        if (this.state.selected == 2 ) {
+            var abc = (
+                <div className='timetable'>
+                    <section className='timeWrapper'>
+                        <div>9:00AM</div>
+                        <div>10:00AM</div>
+                        <div>11:00AM</div>
+                        <div>12:00PM</div>
+                        <div>1:00PM</div>
+                        <div>2:00PM</div>
+                        <div>3:00PM</div>
+                        <div>4:00PM</div>
+                        <div>5:00PM</div>
+                    </section>
+                    <section className='titleWrapper'>
+                        <p className='timeColumn'>TIME</p>
+                        <p className='monday'>MON</p>
+                        <p className='tuesday'>TUE</p>
+                        <p className='wednesday'>WED</p>
+                        <p className='thursday'>THU</p>
+                        <p className='friday'>FRI</p>
+                        <p className='saturday'>SAT</p>
+                    </section>
+                    {this.state.timeTableData ? this.state.timeTableData.map(course =>
+                        <TimeTable
+                            course={course.SCi_subjectName}
+                            day={course.Ctt_weekday}
+                            startTime={course.Ctt_startTime}
+                            endTime={course.Ctt_endTime}
+                        />
+                    ) : null}
+                </div>
+            );
         } else if (this.state.selected == 5) {
-            
+
         } else if (this.state.selected == 8) {
-            
+
         } else {
             var abc = (<div>In progress</div>);
         }

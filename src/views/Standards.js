@@ -220,7 +220,7 @@ class Standards extends React.Component {
   show = (cell, row) => {
     this.props.history.push({
       pathname: '/standardProfile',
-      state: { standard: row.standard }
+      state: { standard: row.standard, branch: row.branch }
     })
   }
 
