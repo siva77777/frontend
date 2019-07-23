@@ -47,6 +47,8 @@ const TimeTable = (props) => {
         >
         <span>
           {props.course}
+          <br />
+          {props.teacher}
         </span> 
         </p>
       )

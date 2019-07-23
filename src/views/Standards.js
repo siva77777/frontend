@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, FormLayout, Modal, Page, Select, TextField } from '@shopify/polaris';
+import { Banner, Button, FormLayout, Modal, Page, TextField } from '@shopify/polaris';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -16,15 +16,13 @@ class Standards extends React.Component {
     this.class = "";
     this.state = {
       rows: [],
-      branchOptions: [],
       showStandardsModal: false,
       standardFieldValue: "",
       capacityFieldValue: "",
       isLoaded: false,
-      selectedBranch: "",
       standardFieldValidationError: "",
       capacityFieldValidationError: "",
-      branchSelectValidationError: ""
+      showBranchSelectionWarning: false
     };
     this.renderButtons = this.renderButtons.bind(this);
   }
@@ -76,20 +74,6 @@ class Standards extends React.Component {
         this.setState({ rows: rows, isLoaded: true });
       });
     }
-    Axios({
-      method: "get",
-      url: "http://www.srmheavens.com/erp/branch/",
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': this.props.token
-      }
-    }).then(response => response.data).then(data => {
-      var options = [];
-      for (var i = 0; i < data.length; i++) {
-        options.push({ label: data[i].SBi_branchName, value: data[i].SBi_branchName });
-      }
-      this.setState({ branchOptions: options });
-    });
   }
 
   render() {
@@ -106,6 +90,9 @@ class Standards extends React.Component {
       >
         <Modal.Section>
           <FormLayout>
+          {this.state.showBranchSelectionWarning ? <Banner
+              title="Select branch in menu bar"
+            ></Banner> : null}
             <FormLayout.Group>
               <TextField
                 label="Standard"
@@ -122,14 +109,6 @@ class Standards extends React.Component {
                 error={this.state.capacityFieldValidationError}
               />
             </FormLayout.Group>
-            <Select
-              label="Branch"
-              options={this.state.branchOptions}
-              onChange={this.handleBranchChange}
-              value={this.state.selectedBranch}
-              placeholder="Select Branch"
-              error={this.state.branchSelectValidationError}
-            />
           </FormLayout>
         </Modal.Section>
       </Modal>
@@ -202,10 +181,6 @@ class Standards extends React.Component {
     this.setState({ capacityFieldValue, capacityFieldValidationError: "" });
   };
 
-  handleBranchChange = (newValue) => {
-    this.setState({ selectedBranch: newValue, branchSelectValidationError: "" });
-  };
-
   handleshowStandardsModalClose = () => {
     this.resetFields();
   };
@@ -233,9 +208,9 @@ class Standards extends React.Component {
       var capacityInvalid = true;
       this.setState({ capacityFieldValidationError: "Capacity should be numeric" })
     }
-    if (!this.state.selectedBranch) {
+    if (this.props.branch == "") {
       var branchInvalid = true;
-      this.setState({ branchSelectValidationError: "Branch is required" })
+      this.setState({ showBranchSelectionWarning: true })
     }
     if (standardInvalid || capacityInvalid || branchInvalid) {
       return false;
@@ -247,12 +222,11 @@ class Standards extends React.Component {
   resetFields = () => {
     this.setState({
       showStandardsModal: false,
-      selectedBranch: "",
       standardFieldValue: "",
       capacityFieldValue: "",
       standardFieldValidationError: "",
       capacityFieldValidationError: "",
-      branchSelectValidationError: ""
+      showBranchSelectionWarning: false
     });
   }
   showSubmitMessage = () => {
@@ -261,7 +235,7 @@ class Standards extends React.Component {
       var data = {
         std: this.state.standardFieldValue,
         strength: this.state.capacityFieldValue,
-        bName: this.state.selectedBranch
+        bName: this.props.branch
       };
       this.resetFields();
       Axios({

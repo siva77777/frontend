@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, FormLayout, Modal, Page, Popover, RadioButton, Select, TextField } from '@shopify/polaris';
+import { Banner, Button, FormLayout, Modal, Page, Popover, RadioButton, Select, TextField } from '@shopify/polaris';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -24,7 +24,6 @@ class Students extends React.Component {
     this.state = {
       rows: [],
       classOptions: [],
-      branchOptions: [],
       busNameOptions: [],
       hallOptions: [],
       showStudentsModal: false,
@@ -58,7 +57,6 @@ class Students extends React.Component {
       selectedClass: "",
       selectedGender: "",
       selectedCategory: "",
-      selectedBranch: "",
       selectedBus: "",
       selectedHall: "",
       classSelectValidationError: "",
@@ -67,7 +65,6 @@ class Students extends React.Component {
       monthSelectValidationError: "",
       hallSelectValidationError: "",
       categorySelectValidationError: "",
-      branchSelectValidationError: "",
       firstNameFieldValidationError: "",
       lastNameFieldValidationError: "",
       phoneNumberFieldValidationError: "",
@@ -76,6 +73,7 @@ class Students extends React.Component {
       motherFirstNameFieldValidationError: "",
       motherLastNameFieldValidationError: "",
       parentPhoneNumberFieldValidationError: "",
+      showBranchSelectionWarning: false,
       isLoaded: false
     };
   }
@@ -128,6 +126,7 @@ class Students extends React.Component {
         this.setState({ rows: rows, isLoaded: true });
       });
     }
+    if (this.props.branch == "") {
     Axios({
       method: "get",
       url: "http://www.srmheavens.com/erp/class/",
@@ -138,10 +137,30 @@ class Students extends React.Component {
     }).then(response => response.data).then(data => {
       var options = [];
       for (var i = 0; i < data.length; i++) {
-        options.push({ label: data[i].class, value: data[i].class });
+        options.push({ label: data[i].class, value: data[i].class + "::" + data[i].branch });
       }
       this.setState({ classOptions: options });
     });
+  } else {
+    var data = {
+      branch: this.props.branch
+    }
+    Axios({
+      method: "post",
+      url: "http://www.srmheavens.com/erp/class/bclass/",
+      headers: {
+        'Content-Type': 'application/json',
+        'x-access-token': this.props.token
+      },
+      data: data
+    }).then(response => response.data).then(data => {
+      var options = [];
+      for (var i = 0; i < data.length; i++) {
+        options.push({ label: data[i].class, value: data[i].class + "::" + data[i].branch });
+      }
+      this.setState({ classOptions: options });
+    });
+  }
     Axios({
       method: "get",
       url: "http://www.srmheavens.com/erp/bus/",
@@ -169,20 +188,6 @@ class Students extends React.Component {
         options.push({ label: data[i].hallName, value: data[i].hallName });
       }
       this.setState({ hallOptions: options });
-    });
-    Axios({
-      method: "get",
-      url: "http://www.srmheavens.com/erp/branch/",
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': this.props.token
-      }
-    }).then(response => response.data).then(data => {
-      var options = [];
-      for (var i = 0; i < data.length; i++) {
-        options.push({ label: data[i].SBi_branchName, value: data[i].SBi_branchName });
-      }
-      this.setState({ branchOptions: options });
     });
   }
 
@@ -225,6 +230,9 @@ class Students extends React.Component {
         >
           <Modal.Section>
             <FormLayout>
+            {this.state.showBranchSelectionWarning ? <Banner
+              title="Select branch in menu bar"
+            ></Banner> : null}
               <FormLayout.Group>
                 <TextField
                   label="First name"
@@ -242,14 +250,6 @@ class Students extends React.Component {
                 />
               </FormLayout.Group>
               <FormLayout.Group>
-                <Select
-                  label="Branch"
-                  options={this.state.branchOptions}
-                  onChange={this.handleBranchChange}
-                  value={this.state.selectedBranch}
-                  placeholder="Select Branch"
-                  error={this.state.branchSelectValidationError}
-                />
                 <Select
                   label="Class"
                   options={this.state.classOptions}
@@ -678,31 +678,10 @@ class Students extends React.Component {
 
   handleClassChange = (newValue) => {
     if (this.state.selectedBranch == "") {
-      this.setState({ classSelectValidationError: "Select branch first" })
+      this.setState({ classSelectValidationError: "Select branch in menu bar" })
     } else {
       this.setState({ selectedClass: newValue, classSelectValidationError: "" });
     }
-  };
-
-  handleBranchChange = (newValue) => {
-    var data = {
-      branch: newValue
-    }
-    Axios({
-      method: "post",
-      url: "http://www.srmheavens.com/erp/class/bclass/",
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': this.props.token
-      },
-      data: data
-    }).then(response => response.data).then(data => {
-      var options = [];
-      for (var i = 0; i < data.length; i++) {
-        options.push({ label: data[i].class, value: data[i].class });
-      }
-      this.setState({ classOptions: options, selectedBranch: newValue, branchSelectValidationError: "", classSelectValidationError: "" });
-    });
   };
 
   handleGenderChange = (newValue) => {
@@ -746,9 +725,9 @@ class Students extends React.Component {
       var classInvalid = true;
       this.setState({ classSelectValidationError: "Class is required" })
     }
-    if (!this.state.selectedBranch) {
+    if (this.props.branch == "") {
       var branchInvalid = true;
-      this.setState({ branchSelectValidationError: "Branch is required" })
+      this.setState({ showBranchSelectionWarning: true })
     }
     if (!this.state.selectedGender) {
       var genderInvalid = true;
@@ -828,7 +807,6 @@ class Students extends React.Component {
       selectedClass: "",
       selectedGender: "",
       selectedCategory: "",
-      selectedBranch: "",
       selectedBus: "",
       selectedHall: "",
       busFeeFieldValue: _BUS_FEE,
@@ -844,7 +822,6 @@ class Students extends React.Component {
       monthSelectValidationError: "",
       hallSelectValidationError: "",
       categorySelectValidationError: "",
-      branchSelectValidationError: "",
       firstNameFieldValidationError: "",
       lastNameFieldValidationError: "",
       phoneNumberFieldValidationError: "",
@@ -853,6 +830,7 @@ class Students extends React.Component {
       motherFirstNameFieldValidationError: "",
       motherLastNameFieldValidationError: "",
       parentPhoneNumberFieldValidationError: "",
+      showBranchSelectionWarning: false
     });
   }
 
@@ -861,6 +839,7 @@ class Students extends React.Component {
   }
 
   showSubmitMessage = () => {
+    console.log(this.state.selectedClass.split("::")[0], "9999999");
     const year = this.state.date.getFullYear();
     const month = `${this.state.date.getMonth() + 1}`.padStart(2, 0);
     const date = `${this.state.date.getDate()}`.padStart(2, 0);
@@ -874,7 +853,7 @@ class Students extends React.Component {
       mOccupation: this.state.motherOccupationFieldValue,
       gName: this.state.guardianNameFieldValue,
       gPhone: this.state.guardianPhoneNumberFieldValue,
-      std: this.state.selectedClass,
+      std: this.state.selectedClass.split("::")[0],
       fName: this.state.firstNameFieldValue,
       lName: this.state.lastNameFieldValue,
       gender: this.state.selectedGender,
@@ -882,7 +861,7 @@ class Students extends React.Component {
       dob: year + "-" + month + "-" + date,
       email: this.state.emailAddressFieldValue,
       address: this.state.addressFieldValue,
-      bName: this.state.selectedBranch,
+      bName: this.props.branch,
       rDetails: this.state.value,
       busFee: this.state.busFeeFieldValue || 0,
       hostelFee: this.state.hostelFeeFieldValue || 0,

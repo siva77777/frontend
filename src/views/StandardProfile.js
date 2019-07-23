@@ -47,12 +47,7 @@ class StandardProfile extends React.Component {
             },
             data: data
         }).then(response => response.data).then(data => {
-            console.log(data, "2222222");
             this.setState({ timeTableData: data, isLoaded: true });
-            // for (var i = 0; i < tableData.length; i++) {
-            //     rows.push({ class: tableData[i].classSubject, strength: tableData[i].strength, branch: tableData[i].branch });
-            // }
-            // this.setState({ rows: rows, isLoaded: true });
         });
     }
 
@@ -113,6 +108,7 @@ class StandardProfile extends React.Component {
                             day={course.Ctt_weekday}
                             startTime={course.Ctt_startTime}
                             endTime={course.Ctt_endTime}
+                            teacher={course.Ti_teacherName}
                         />
                     ) : null}
                 </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, FormLayout, Modal, Page, Select, TextField } from '@shopify/polaris';
+import { Banner, Button, FormLayout, Modal, Page, TextField } from '@shopify/polaris';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -16,17 +16,15 @@ class Teachers extends React.Component {
     super(props);
     this.state = {
       rows: [],
-      branchOptions: [],
       showTeachersModal: false,
       isLoaded: false,
-      selectedBranch: "",
       teacherNameFieldValue: "",
       teacherPhoneNumberFieldValue: "",
       teacherSpecializationFieldValue: "",
       teacherNameFieldValidationError: "",
       teacherPhoneNumberFieldValidationError: "",
       teacherSpecializationFieldValidationError: "",
-      branchSelectValidationError: ""
+      showBranchSelectionWarning: false
     };
     this.renderButtons = this.renderButtons.bind(this);
   }
@@ -92,20 +90,6 @@ class Teachers extends React.Component {
         this.setState({ rows: rows, isLoaded: true });
       });
     }
-    Axios({
-      method: "get",
-      url: "http://www.srmheavens.com/erp/branch/",
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': this.props.token
-      }
-    }).then(response => response.data).then(data => {
-      var options = [];
-      for (var i = 0; i < data.length; i++) {
-        options.push({ label: data[i].SBi_branchName, value: data[i].SBi_branchName });
-      }
-      this.setState({ branchOptions: options });
-    });
   }
 
   render() {
@@ -122,6 +106,9 @@ class Teachers extends React.Component {
       >
         <Modal.Section>
           <FormLayout>
+          {this.state.showBranchSelectionWarning ? <Banner
+              title="Select branch in menu bar"
+            ></Banner> : null}
             <FormLayout.Group>
               <TextField
                 label="Teacher Name"
@@ -145,14 +132,6 @@ class Teachers extends React.Component {
                 onChange={this.handleTeacherSpecializationFieldChange}
                 type="text"
                 error={this.state.teacherSpecializationFieldValidationError}
-              />
-              <Select
-                label="Branch"
-                options={this.state.branchOptions}
-                onChange={this.handleBranchChange}
-                value={this.state.selectedBranch}
-                placeholder="Select Branch"
-                error={this.state.branchSelectValidationError}
               />
             </FormLayout.Group>
           </FormLayout>
@@ -239,10 +218,6 @@ class Teachers extends React.Component {
     this.setState({ teacherSpecializationFieldValue, teacherSpecializationFieldValidationError: "" });
   };
 
-  handleBranchChange = (newValue) => {
-    this.setState({ selectedBranch: newValue, branchSelectValidationError: "" });
-  };
-
   validate = () => {
     if (validator.isEmpty(this.state.teacherNameFieldValue, { ignore_whitespace: true })) {
       var teacherNameInvalid = true;
@@ -256,11 +231,11 @@ class Teachers extends React.Component {
       var teacherSpecializationInvalid = true;
       this.setState({ teacherSpecializationFieldValidationError: "Teacher Specialization cannot be empty" })
     }
-    if (!this.state.selectedBranch) {
+    if (this.props.branch == "") {
       var branchInvalid = true;
-      this.setState({ branchSelectValidationError: "Branch is required" })
+      this.setState({ showBranchSelectionWarning: true })
     }
-    if (teacherNameInvalid || teacherPhoneNumberInvalid || teacherSpecializationInvalid) {
+    if (teacherNameInvalid || teacherPhoneNumberInvalid || teacherSpecializationInvalid || branchInvalid) {
       return false;
     } else {
       return true;
@@ -274,14 +249,13 @@ class Teachers extends React.Component {
   resetFields = () => {
     this.setState({
       showTeachersModal: false,
-      selectedBranch: "",
       teacherNameFieldValue: "",
       teacherPhoneNumberFieldValue: "",
       teacherSpecializationFieldValue: "",
       teacherNameFieldValidationError: "",
       teacherPhoneNumberFieldValidationError: "",
       teacherSpecializationFieldValidationError: "",
-      branchSelectValidationError: ""
+      showBranchSelectionWarning: false
     });
   }
   showSubmitMessage = () => {
@@ -291,7 +265,7 @@ class Teachers extends React.Component {
         tName: this.state.teacherNameFieldValue,
         tPhone: this.state.teacherPhoneNumberFieldValue,
         tSpecialization: this.state.teacherSpecializationFieldValue,
-        bName: this.state.selectedBranch
+        bName: this.props.branch
       };
       this.resetFields();
       Axios({

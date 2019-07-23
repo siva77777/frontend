@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, FormLayout, Modal, Page, Select, TextField } from '@shopify/polaris';
+import { Banner, Button, FormLayout, Modal, Page, TextField } from '@shopify/polaris';
 import BootstrapTable from 'react-bootstrap-table-next';
 import ToolkitProvider, { Search } from 'react-bootstrap-table2-toolkit';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -16,20 +16,18 @@ class Hostels extends React.Component {
     super(props);
     this.state = {
       rows: [],
-      branchOptions: [],
       isLoaded: false,
       showHostelsModal: false,
       hallNameFieldValue: "",
       hallCapacityFieldValue: "",
       hallWardenFieldValue: "",
       wardenPhoneNumberFieldValue: "",
-      selectedBranch: "",
       remarks: "",
       hallNameFieldValidationError: "",
       hallCapacityFieldValidationError: "",
       hallWardenFieldValidationError: "",
       wardenPhoneNumberValidationError: "",
-      branchSelectValidationError: ""
+      showBranchSelectionWarning: false
     };
   }
 
@@ -80,20 +78,6 @@ class Hostels extends React.Component {
         this.setState({ rows: rows, isLoaded: true });
       });
     }
-    Axios({
-      method: "get",
-      url: "http://www.srmheavens.com/erp/branch/",
-      headers: {
-        'Content-Type': 'application/json',
-        'x-access-token': this.props.token
-      }
-    }).then(response => response.data).then(data => {
-      var options = [];
-      for (var i = 0; i < data.length; i++) {
-        options.push({ label: data[i].SBi_branchName, value: data[i].SBi_branchName });
-      }
-      this.setState({ branchOptions: options });
-    });
   }
 
   render() {
@@ -110,6 +94,9 @@ class Hostels extends React.Component {
       >
         <Modal.Section>
           <FormLayout>
+          {this.state.showBranchSelectionWarning ? <Banner
+              title="Select branch in menu bar"
+            ></Banner> : null}
             <FormLayout.Group>
               <TextField
                 label="Hall Name"
@@ -143,14 +130,6 @@ class Hostels extends React.Component {
               />
             </FormLayout.Group>
             <FormLayout.Group>
-              <Select
-                label="Branch"
-                options={this.state.branchOptions}
-                onChange={this.handleBranchChange}
-                value={this.state.selectedBranch}
-                placeholder="Select Branch"
-                error={this.state.branchSelectValidationError}
-              />
               <TextField
                 label="Remarks"
                 value={this.state.remarks}
@@ -248,10 +227,6 @@ class Hostels extends React.Component {
     this.setState({ wardenPhoneNumberFieldValue, wardenPhoneNumberValidationError: "" });
   };
 
-  handleBranchChange = (newValue) => {
-    this.setState({ selectedBranch: newValue, branchSelectValidationError: "" });
-  };
-
   handleRemarksFieldChange = (remarks) => {
     this.setState({ remarks });
   };
@@ -277,9 +252,9 @@ class Hostels extends React.Component {
       var wardenPhoneNumberInvalid = true;
       this.setState({ wardenPhoneNumberValidationError: "Warden phone number is invalid" })
     }
-    if (!this.state.selectedBranch) {
+    if (this.props.branch == "") {
       var branchInvalid = true;
-      this.setState({ branchSelectValidationError: "Branch is required" })
+      this.setState({ showBranchSelectionWarning: true })
     }
     if (hallNameInvalid || hallCapacityInvalid || hallWardenInvalid || wardenPhoneNumberInvalid || branchInvalid) {
       return false;
@@ -296,12 +271,11 @@ class Hostels extends React.Component {
       hallWardenFieldValue: "",
       wardenPhoneNumberFieldValue: "",
       remarks: "",
-      selectedBranch: "",
       hallNameFieldValidationError: "",
       hallCapacityFieldValidationError: "",
       hallWardenFieldValidationError: "",
       wardenPhoneNumberValidationError: "",
-      branchSelectValidationError: ""
+      showBranchSelectionWarning: false
     });
   }
   showSubmitMessage = () => {
@@ -312,7 +286,7 @@ class Hostels extends React.Component {
         hCapacity: this.state.hallCapacityFieldValue,
         hWarden: this.state.hallWardenFieldValue,
         wPhone: this.state.wardenPhoneNumberFieldValue,
-        bName: this.state.selectedBranch,
+        bName: this.props.branch,
         hRemarks: this.state.remarks
       };
       this.resetFields();
